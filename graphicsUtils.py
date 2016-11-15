@@ -123,7 +123,7 @@ def wait_for_click():
 		sleep(0.05)
 
 def draw_background():
-	corners = [(0.0), (0, _canvas_ys), (_canvas_xs, _canvas_ys), (_canvas_xs, 0)]
+	corners = [(0, 0), (0, _canvas_ys), (_canvas_xs, _canvas_ys), (_canvas_xs, 0)]
 	polygon(corners, _bg_color, fillColor=_bg_color, filled=True, smoothed=False)
 
 def _destroy_window(event=None):
@@ -377,11 +377,12 @@ ghost_shape = [
   ]
 
 if __name__ == '__main__':
-	#clear_screen()
+	if _canvas != None: clear_screen()
 	begin_graphics()
 	# ?
 	ghost_shape = [(x * 10 + 20, y * 10 + 20) for x, y in ghost_shape]
 	g = polygon(ghost_shape, formatColor(1, 1, 1))
 	move_to(g, (50, 50))
-	circle((150, 150), 20, formatColor(0.7, 0.3, 0.0), endpoints=[15, - 15])
+	circle((150, 150), 20, formatColor(0.7, 0.3, 0.0), formatColor(0.7, 0.3, 0.0), endpoints=[15, - 15])
 	sleep(2)
+

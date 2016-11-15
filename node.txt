@@ -1,0 +1,238 @@
+# Utility.py --start
+
+class FixedRandom: not yet
+
+Data Structures:
+class Stack:
+- pop, push, isEmpty()
+
+class Queue (FIFO):
+- push, pop, insert, isEmpty
+
+class PriorityQueue:
+- push (priority), pop, isEmpty
+
+class PriorityQueueWithFuction(PriorityQueue)
+- push
+
+def manhattanDistance
+
+class Counter(dict)
+- __getitem__
+- incrementAll()
+- argMax
+- sortedKeys
+- totalCount
+- normalize
+- devideAll
+- copy
+- __mul__: multiply
+- __radd__: add
+- __add__: 
+- __sub__:
+
+def raiseNotDefined: raise error
+
+def normalize
+
+def nSample
+
+def sample
+
+def sampleFromCounter
+
+def getProbability
+
+def filpCoin
+
+def chooseFromDistribution
+
+def nearestPoint
+
+def sign(x)
+
+def arrayInvert(array)
+
+def matrixAsList(matrix, value = True)
+
+def lookup
+
+def pause()
+
+Handle timeouts- 
+
+class TimeoutFunctionException
+
+class TimeoutFunction
+
+class writableNull
+
+def mutePrint()
+
+def unmutePrint()
+# Utility.py --end
+
+
+
+#graphicsUtilis.py --start
+
+# this is for graphics utility
+# graphicsDisplay.py
+
+Basic setting of display
+Including: size, color(background, wall, info, score...)
+
+Agent outline with
+Capture ouline width
+
+Agents color []
+Agent_shape = [()()()()]
+Agent_size
+
+Agent: 1. persuer 2. target
+
+class InfoPane
+
+-- Using runaway Algorithm:s min-max, a star, random move:
+
+class targetGraphic:
+	def __init__()
+		self.have_window
+		self.capture = capture
+		self.frameTime = frameTime
+	
+	def initialize
+
+	def startGraphics()
+
+	def drawDistributions:
+
+	def drawStaticObjects
+
+	def drawAgentObjects
+
+	def swapImage?
+
+	def update
+
+	def make_window
+
+	def drawTarget
+
+	def getEndpoints
+
+	def moveTarget
+
+	def animateTarget
+
+	def drawPursuer
+
+	def movePursuer
+
+	def getPosition
+
+	def getDirection
+
+	def drawWalls
+
+	def isWall
+
+	def drawFood
+
+	def updateDistributions
+
+--First person control:
+
+class FirstPersonTargetGrpchics
+	def __init__
+
+	def initialize()
+
+	def lookAhead
+
+	def getPosition
+
+
+def add(x, y)
+
+def saveFrame()
+
+#graphicsUtilis.py --end
+
+# layout.py --start
+
+class Layout:
+
+	def _init_()
+
+	def getNumPursuers()
+
+	def initializeVisibilityMatrix()
+
+	def isWall
+
+	def getRandomLegalPosition()
+
+	def getRandomCorner
+
+	def getFurthestCorner
+
+	def processLayoutText
+		"""
+		% wall
+		P - pursuer
+		T - target
+		"""
+
+	def processLayoutChar()
+
+def getLayout()
+
+
+def tryToLoad()
+
+# layout.py --end
+
+# targetAgents.py --start
+
+algorithm for running away
+
+
+# targetAgents.py --end
+
+# multiPursuers.py --start
+
+--single agent
+class a star
+
+class AlphaBeta
+
+class ExpectimaxAgent
+
+
+--multi agent
+class coverSetPursuers:
+	def getAction
+
+	def evaluationFunction
+
+class newAlgorithmFunction
+
+class MAMTS():
+
+def scoreEvaluationFunction
+
+# multiPursuers.py --end
+
+# main.py --start
+
+(1) interface to this framework
+
+
+
+(2) logic code for reading commend
+
+(3) Framework to start the game
+ 
+
+# main.py --end
