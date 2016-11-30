@@ -170,6 +170,17 @@ def square(pos, r, color, filled=1, behind=0):
 	coords = [(x - y, y - r), (x + y, y - r), (x + y, y + r), (x - y, y + r)]
 	return polygon(coords, color, color, filled, 0, behind=behind)
 
+# Create a rect
+def rect(pos, r, color):
+	x, y = pos
+	x1, y1 = x + r, y + r
+	return _canvas.create_rectangle(x, y, x1, y1, fill = color)
+
+def agent_circle(pos, r, color):
+	x, y = pos
+	x1, y1 = x + 2*r, y + 2*r
+	return _canvas.create_oval(x, y, x1, y1, fill = color)
+
 # Create a circle
 def circle(pos, r, outlineColor, fillColor, endpoints=None, style='pieslice', width=2):
 	x, y = pos
@@ -208,6 +219,10 @@ def moveCircle(id, pos, r, endpoints=None):
 
 	edit(id, ('start', e[0]), ('extent', e[1] - e[0]))
 	move_to(id, x0, y0)
+
+def moveAgent(id, pos):
+	x, y = pos
+	move_to(id, x, y)
 
 def edit(id, *args):
 	_canvas.itemconfigure(id, **dict(args))

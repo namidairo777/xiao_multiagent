@@ -1,3 +1,34 @@
+We have the following files in our project:
+
+- multiAgent.py
+class for main logic
+
+- targetAgent.py
+extends multiAgnet, implement what a target would do including several algorithms
+
+- pursuerAgents.py
+extends multiAgent, implement what a pursuer would do including several algorithms and my proposed method
+
+- graphicUtils.py
+utility for graphic
+
+- graphicDisplay.py
+implement what should be shown on screen, and use a lot of pre-defined function in graphicUtil
+
+- layout.py
+translate the layouts files (.lay) into what could be understood by program.
+
+- keyboardAgent.py
+keyboard for users to control a target from be caught
+
+- game.py
+defined basic setting, rules, directions, agent class
+
+
+
+
+
+
 # Utility.py --start
 
 class FixedRandom: not yet
@@ -228,11 +259,10 @@ def scoreEvaluationFunction
 
 (1) interface to this framework
 
-
-
 (2) logic code for reading commend
 
 (3) Framework to start the game
+
  
 
 # main.py --end
