@@ -49,7 +49,7 @@ class InfoPane:
         return x, y
 
     def drawPane(self):
-        self.scoreText = text(self.toScreen(0, 0), self.textColor, "SCORE:  0", "TIMES", self.fontSize, "bold")
+        self.scoreText = text(self.toScreen(0, 0), self.textColor, "TURNS:  0", "TIMES", self.fontSize, "bold")
 
     def initializePursuerDistances(self, distances):
         self.pursuerDistanceText = []
@@ -65,7 +65,7 @@ class InfoPane:
             self.pursuerDistanceText.append(t)
 
     def updateScore(self, score):
-        changeText(self.scoreText, "SCORE: % 4d" % score)
+        changeText(self.scoreText, "TURNS: % 4d" % score)
 
     # def setTeam()
 
@@ -78,7 +78,7 @@ class InfoPane:
 
 
 class MultiAgentGraphics:
-    def __init__(self, zoom = 1.0, frameTime = 0.0, capture = False):
+    def __init__(self, zoom = 1.0, frameTime = 30.0, capture = False):
         self.have_window = 0
         self.currentPursuerImages = {}
         self.pursuerImage = None
@@ -99,7 +99,7 @@ class MultiAgentGraphics:
         self.drawStaticObjects(state)
         
         self.drawAgentObjects(state)
-        # time.sleep(3)
+        time.sleep(1)
         # information
         self.previousState = state
         
@@ -145,21 +145,20 @@ class MultiAgentGraphics:
                 self.agentImages.append((agent, image))
         refresh()
 
-    def update(self, newState):
-        agentIndex = newState._agentMoved
+    def update(self, newState, agentIndex):
+        
+        agentIndex = agentIndex
         agentState = newState.agentStates[agentIndex]
+        print newState.agentStates[1]
 
         # if self.agentImages[agentIndex][0].isTarget != agentState.isTarget: self.swapImages(agentIndex, agentState)
         prevState, prevImage = self.agentImages[agentIndex]
         # print "before move agents"
-        print self.agentImages[agentIndex]
-        position = self.agentImages[agentIndex].getPosition()
-        if agentState.isTarget:
-            self.moveTarget(position, prevState, prevImage)
-        else:
-            self.movePursuer(position, agentIndex, prevState, prevImage)
+        if agentIndex == 0:
+            time.sleep(1/self.frameTime )
+        self.moveAgent(agentState, prevState, prevImage)
         
-        print "after update.move"
+        # print "after update.move"
         self.agentImages[agentIndex] = (agentState, prevImage)
 
         self.infoPane.updateScore(newState.score)
@@ -201,14 +200,10 @@ class MultiAgentGraphics:
             endpoints = (0+delta, 0-delta)
         return endpoints
 
-    def moveTarget(self, position, direction, image):
-
-        screenPosition = self.to_screen(position)
-        
-        # endpoints = self.getEndpoints(direction, position)
-        # r = TARGET_SCALE * self.gridSize
-        moveAgent(image[0], screenPosition)
-        #moveCircle(image[0], screenPosition, r, endpoints)
+    def moveAgent(self, newState, prevState, image):
+        newPosition = newState.getPosition()
+        screenPosition = self.to_screen(newPosition)
+        moveAgent(image, screenPosition)
 
         refresh()
 
@@ -243,8 +238,6 @@ class MultiAgentGraphics:
         end_graphics()
 
     def to_screen(self, point):
-        # print point
-        # print point
         # print "beginning of to_screen"
         (x, y) = point
         x = x * self.gridSize

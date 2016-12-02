@@ -58,15 +58,15 @@ class Configuration:
 
     """
     
-    def __init__(self, pos, direction):
+    def __init__(self, pos):
         self.pos = pos
-        self.direction = direction
+        # self.direction = direction
 
     def getPosition(self):
         return (self.pos)
 
-    def getDirection(self):
-        return self.direction
+    #def getDirection(self):
+     #   return self.direction
 
     def isInteger(self):
         x, y = self.pos
@@ -82,21 +82,16 @@ class Configuration:
         return hash(x + 13 * y)
 
     def __str__(self):
-        return "(x,y)="+str(self.pos)+", "+str(self.direction)
+        return "(x,y)="+str(self.pos)
 
-    def generateSuccssor(self, vector):
+    def generateSuccessor(self, pos):
         """
         Generate a new Configuration reached by translating the current configuration by the action vector. 
         This is a low-level call and does not attempt to respect the legality of the movement
         Actions are movement vectors.
         """
 
-        x, y = self.pos
-        dx, dy = vector
-        direction == Actions.vectorToDirection(vector)
-        if direction == Directions.STOP:
-            direction = self.direction
-        return Configuration((x + dx, y + dy), direction)
+        return Configuration(pos)
 
 class AgentState:
     """
@@ -140,8 +135,8 @@ class AgentState:
         if self.configuration == None: return None
         return self.configuration.getPosition()
 
-    def getDirection(self):
-        return self.configuration.getDirection()
+    #def getDirection(self):
+     #   return self.configuration.getDirection()
         
 class Grid:
     """
@@ -158,7 +153,6 @@ class Grid:
         self.data = [[initialValue for y in range(height)] for x in range(self.width)]
 
     def __getitem__(self, i):
-        # print len(self.data)
         return self.data[i]
 
     def __setitem__(self, key, item):
@@ -234,21 +228,18 @@ class Actions:
 
     directionToVector = staticmethod(directionToVector)
 
-    def getPossibleActions(config, obstacles):
+    def getPossibleActions(config, speed, obstacles):
         possible = []
-        x, y = config.pos
-        x_int, y_int = int(x + 0.5), int(y + 0.5)
-
-        # In between grid points, all agents must continue straight
-        if (abs(x - x_int) + abs(y - y_int)  > Actions.TOLERANCE):
-            return [config.getDirection()]
-
-        for dir, vec in Actions._directionsAsList:
-            dx, dy = vec
-            next_y = y_int + dy
-            next_x = x_int + dx
-            if not obstacles[next_x][next_y]: possible.append(dir)
-
+        x, y = config
+        if not obstacles[int(x + speed)][y]:
+            possible.append((int(x + speed), y))
+        if not obstacles[int(x - speed)][y]:
+            possible.append((int(x - speed), y))
+        if not obstacles[x][int(y + speed)]:
+            possible.append((x, int(y + speed)))
+        if not obstacles[x][int(y - speed)]:
+            possible.append((x, int(y - speed)))
+        possible.append((x, y))
         return possible
 
     getPossibleActions = staticmethod(getPossibleActions)
@@ -282,7 +273,7 @@ class Actions:
 
 class GameStateData:
     """
-
+    GameState.data
     """
     def __init__(self, prevState = None):
         """
@@ -330,8 +321,9 @@ class GameStateData:
                     continue
                 else:
                     numPursuers += 1
-            self.agentStates.append(AgentState(Configuration(pos, Directions.STOP), isTarget))
-
+            self.agentStates.append(AgentState(Configuration(pos), isTarget))
+        
+                    
 class Game:
     """
     The Game manages the control flow, soliciting actions from agents.
@@ -343,7 +335,6 @@ class Game:
         self.startingIndex = startingIndex
         self.gameOver = False
         self.moveHistory = []
-        self.muteAgents = muteAgents
         self.catchExceptions = catchExceptions
 
     def getProgress(self):
@@ -354,118 +345,52 @@ class Game:
 
     # def _agentCrashed
 
-    OLD_STDOUT = None
-    OLD_STDERR = None
-
-    def mute(self, agentIndex):
-        if not self.muteAgents: return 
-        global OLD_STDOUT, OLD_STDERR
-        import cStringIO
-        OLD_STDOUT = sys.stdout
-        OLD_STDERR = sys.stderr
-        sys.stdout = self.agentOutput[agentIndex]
-        sys.stderr = self.agentOutput[agentIndex]
-
-    def unmute(self):
-        if not self.muteAgents: return 
-        global OLD_STDOUT, OLD_STDERR
-        # Revert stdout/stderr to originals
-        sys.stdout = OLD_STDOUT
-        sys.stderr = OLD_STDERR
+    
 
     def run(self):
         """
         Main control loop for game play
+
+        flow
+        loop agents to make plan
+        update the GameState
+        display   
+        
+
         """
         self.display.initialize(self.state.data)
         self.numMoves = 0
         import time 
-
-        for i in range(len(self.agents)):
-            agent = self.agents[i]
-            """
-            if not agent:
-                # if agent is null, meaning it failed to load
-                self.mute(i)
-                print >>sys.stderr, "Agent %d failed to load" % i
-                self.unmute()
-                # self._agentCrash(i, quiet = True)
-                return
-            if ("registerInitialState" in dir(agent)):
-                self.mute(i)
-                if self.catchExceptions:
-                    try:
-                        timed_func = TimeoutFunction(agent.registerInitialState, int(self.rules.getMaxStartupTime(i)))
-                        try:
-                            start_time = time.time()
-                            timed_func(self.state.deepCopy())
-                            time_taken = time.time() - start_time
-                            self.totalAgentTimes[i] += time_taken
-                        except TimeoutFunctionException:
-                            print >>sys.stderr, "Agent %d ran out of time on startup!" % i
-                            self.unmute()
-                            self.agentTimeout = True
-                            self._agentCrash(i, quiet = True)
-                            return
-                    except Exception, data:
-                        self._agentCrash(i, quiet = False)
-                        self.unmute()
-                        return
-                else:
-                    agent.registerInitialState(self.state.deepCopy())
-                self.unmute()
-            """
+            
         agentIndex = self.startingIndex
         numAgents = len(self.agents)
 
         timeCount = 0
-        #while not self.gameOver:
-        while timeCount < 50000:
-            # Fetch the next agent
-            agent = self.agents[agentIndex]
-            move_time = 0
-            skip_action = False
-            # Generate an observation of the state
-            if "observatioinFunction" in dir(agent):
-                self.mute(agentIndex)
-                if self.catchExceptions:
-                    try:
-                        # timed_func = TimeoutFunction(agent.)
-                        try:
-                            start_time = time.time()
-                        except Exception, data:
-                        	return
-                    except Exception, data:
-                       	return
-            observation = self.state.deepCopy()
-            # Solicit an action
-            action = None
-            self.mute(agentIndex)
-
-            action = agent.getAction(observation)
-            self.unmute()
-
-            # Execute the action
-            self.moveHistory.append((agentIndex, action))
-            self.state = self.state.generateSuccessor(agentIndex, action)
         
-            # Change the display
-            print "Before update display"
+        # Rules are different from pacman project
+        turnCount = 0
+        while not self.gameOver:
+            # make the plan for moving
+            observation = self.state.deepCopy()
+            #agentMovement = []
+            print "turn", turnCount
+            for agentIndex in range(len(self.agents)):
+                agent = self.agents[agentIndex]
+                action = agent.getAction(observation, agentIndex)
+                self.moveHistory.append((agentIndex, action))
+                #agentMovement.append((agentIndex, action))
+                #update GameState
+                self.state = self.state.generateSuccessor(action, agentIndex)     
+                self.display.update(self.state.data, agentIndex)
+                if agentIndex != 0: 
+                    self.rules.collide(self.state, agentIndex)
 
-            self.display.update(self.state.data)
-            # Allow for game specific conditions ( winning, losing)
-            #print "After display"
-            self.rules.process(self.state, self)
+            turnCount += 1
+            #update GameState
+            #self.state = self.state.generateSuccessor(action, agentIndex)
 
-            print "After update Display"
-            # Track progress
-            if agentIndex == numAgents + 1: self.numMoves += 1
 
-            # Next agent
-            agentIndex = (agentIndex + 1) % numAgents
-
-            timeCount += 1
-            if timeCount % 1000 == 0: print timeCount
+            # display for moving 
 
 
         # Inform a learning agent of the game result
