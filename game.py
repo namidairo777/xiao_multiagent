@@ -65,6 +65,9 @@ class Configuration:
     def getPosition(self):
         return (self.pos)
 
+    def setPosition(self, pos):
+        self.pos = pos
+
     #def getDirection(self):
      #   return self.direction
 
@@ -135,6 +138,8 @@ class AgentState:
         if self.configuration == None: return None
         return self.configuration.getPosition()
 
+    def setPosition(self, pos):
+        self.configuration.setPosition(pos)
     #def getDirection(self):
      #   return self.configuration.getDirection()
         
@@ -245,6 +250,23 @@ class Actions:
     getPossibleActions = staticmethod(getPossibleActions)
 
 
+    def getPossibleNeighborActions(config, speed, obstacles):
+        possible = []
+        x, y = config
+        if not obstacles[int(x + speed)][y]:
+            possible.append((int(x + speed), y))
+        if not obstacles[int(x - speed)][y]:
+            possible.append((int(x - speed), y))
+        if not obstacles[x][int(y + speed)]:
+            possible.append((x, int(y + speed)))
+        if not obstacles[x][int(y - speed)]:
+            possible.append((x, int(y - speed)))
+        return possible
+
+    getPossibleNeighborActions = staticmethod(getPossibleNeighborActions)
+
+
+
     def getLegalNeighbors(position, walls):
         x, y = position
         x_int, y_int = int(x + 0.5), int(y + 0.5)
@@ -336,6 +358,7 @@ class Game:
         self.gameOver = False
         self.moveHistory = []
         self.catchExceptions = catchExceptions
+        self.turn = 0
 
     def getProgress(self):
         if self.gameOver:
@@ -365,15 +388,15 @@ class Game:
         agentIndex = self.startingIndex
         numAgents = len(self.agents)
 
-        timeCount = 0
         
+        #time.sleep(2)
         # Rules are different from pacman project
-        turnCount = 0
+        # turnCount = 0
         while not self.gameOver:
             # make the plan for moving
             observation = self.state.deepCopy()
             #agentMovement = []
-            print "turn", turnCount
+            #print "turn", turnCount
             for agentIndex in range(len(self.agents)):
                 agent = self.agents[agentIndex]
                 action = agent.getAction(observation, agentIndex)
@@ -381,11 +404,11 @@ class Game:
                 #agentMovement.append((agentIndex, action))
                 #update GameState
                 self.state = self.state.generateSuccessor(action, agentIndex)     
-                self.display.update(self.state.data, agentIndex)
+                self.display.update(self.state.data, agentIndex, self.turn)
                 if agentIndex != 0: 
                     self.rules.collide(self.state, agentIndex)
 
-            turnCount += 1
+            self.turn += 1
             #update GameState
             #self.state = self.state.generateSuccessor(action, agentIndex)
 

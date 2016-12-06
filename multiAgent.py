@@ -53,7 +53,9 @@ class GameState:
         Returns the successor state after the specified pursuer takes action
         """
         # Check that successors exist
-        if self.isWin() or self.isLose(): raise Exception('can not generate a successor of a terminal state.')
+        if self.isWin() or self.isLose(): 
+            time.sleep(2)
+            raise Exception('Game over')
 
         # Copy current state
         state = GameState(self)
@@ -247,7 +249,7 @@ class TargetRules:
         # Update configuration
         # vector = Actions.directionToVector(action, TargetRules.TARGET_SPEED)
         targetState.configuration = targetState.configuration.generateSuccessor(action)
-        print "Target ", state.data.agentStates[0].getPosition()
+        #print "Target ", state.data.agentStates[0].getPosition()
         #
     applyAction = staticmethod(applyAction)
 
@@ -280,7 +282,7 @@ class PursuerRules:
         # speed = PursuerRules.PURSUER_SPEED
         #vector = Actions.directionToVector(action, speed)
         pursuerState.configuration = pursuerState.configuration.generateSuccessor(action)
-        print "Pursuer ", pursuerIndex, state.data.agentStates[pursuerIndex].getPosition()
+        #print "Pursuer ", pursuerIndex, state.data.agentStates[pursuerIndex].getPosition()
         
 
     applyAction = staticmethod(applyAction)
@@ -295,18 +297,22 @@ class PursuerRules:
 # Framework to start this world
 ##############################
 
-def readCommand():
+def readCommand(param):
     """
 
     """
     args = dict()
-    args["layout"] = layout.getLayout("basicMap.lay")
+    args["layout"] = layout.getLayout(param[0] + ".lay")
     import targetAgents as targets
     import pursuerAgents as pursuers
     import graphicsDisplay as graphics
     args["target"] = targets.SimpleFleeTarget()
     # creat several pursuers
-    args["pursuers"] = [pursuers.AstarPursuer(i) for i in range(1, args["layout"].getNumPursuers() + 1)]
+    print "agent num", args["layout"].getNumPursuers()
+    if len(param) > 1:
+        args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+    else:
+        args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
     args["display"] = graphics.MultiAgentGraphics()
     return args
 
@@ -324,7 +330,7 @@ def runGames(layout, target, pursuers, display, numGames = 1, record = 1, numTra
     __main__.__dict__['_display'] = display
     rules = ClassicGameRules(timeout)
     games = []
-
+    #print sys.argv[1:]
     for i in range(numGames):
         game = rules.newGame(layout, target, pursuers, display, catchException)
         game.run()
@@ -340,5 +346,6 @@ if __name__ == '__name__':
 
     pass
     
-args = readCommand()
+args = readCommand(sys.argv[1:])
+
 runGames(args["layout"], args["target"], args["pursuers"], args["display"])

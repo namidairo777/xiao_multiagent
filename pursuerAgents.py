@@ -86,7 +86,7 @@ class AstarPursuer(Agent):
                     openList = openList[:i] + openList[i + 1:]
                     break
             closedList.append(currentPoint)
-            neighbors = Actions.getPossibleActions(currentPoint.position, 1.0, obstacles)
+            neighbors = Actions.getPossibleNeighborActions(currentPoint.position, 1.0, obstacles)
 
             for i in range(len(neighbors)):
                 neighbor = Position(neighbors[i], 0, 0, 0)
@@ -115,7 +115,7 @@ class AstarPursuer(Agent):
         return False
 
 
-
+# A star class
 class Position:
     def __init__(self, position, g, h, f, parent = None):
         self.position = position
@@ -124,9 +124,7 @@ class Position:
         self.f = h
         self.parent = parent
 
-class MTSPursuer(Agent):
-    def getAction(self, state):
-        return 0
+
 
 class CRAPursuer(Agent):
     """
@@ -136,19 +134,90 @@ class CRAPursuer(Agent):
     Cmax
     Cpra*    
     """
+
+
+    def getAction(self, state, agentIndex):
+        return self.calculateSuccessorSet(agentIndex, state, state.data.layout)
+
+    
+    def calculateCover(self, agentIndex, state, layout):
+        targetSet = 0
+        targetQueue = []
+        pursuerQueue = []
+        time = 0
+        locations = layout.deepCopy()
+        #print type(agentIndex) #state.data.agentStates[agentIndex].getPosition()
+        targetQueue.append({"position": state.data.agentStates[0].getPosition(), "time": time})
+        x, y = state.data.agentStates[0].getPosition()
+        locations.obstacles[x][y] = "target-set"
+        targetSet += 1
+        #print targetQueue
+        for i in range(1, layout.getNumPursuers() + 1):
+            pursuerQueue.append({"position": state.data.agentStates[i].getPosition(), "time": time})
+            x, y = state.data.agentStates[i].getPosition()
+            locations.obstacles[x][y] = "pursuer-set"
+        #print targetQueue
+        while len(targetQueue) != 0 :
+
+            #print "len of target:", len(targetQueue), "len of pursuer", len(pursuerQueue)
+            # current target
+            #print len(targetQueue)
+            while len(targetQueue) > 0 and targetQueue[0]["time"] == time:
+                temp = targetQueue.pop(0)
+                (target_x, target_y) = temp["position"]
+                tempTime = temp["time"]
+                #print "time", tempTime 
+                #print targetQueue
+
+                neighbors = Actions.getPossibleNeighborActions((target_x, target_y), 1.0, layout.obstacles)
+                #print neighbors
+                for neighbor in neighbors:
+                    x, y = neighbor
+                    if locations.obstacles[x][y] not in ["target-set", "pursuer-set"]:
+                        targetQueue.append({"position": neighbor, "time": time + 1}) 
+                        locations.obstacles[x][y] = "target-set"
+                        targetSet += 1
+
+
+            # current pursuer
+            #print "targetset", targetSet
+            #print len(pursuerQueue)
+            while len(pursuerQueue) > 0 and pursuerQueue[0]["time"] == time:
+                (pursuer_x, pursuer_y) = pursuerQueue.pop(0)["position"]
+
+                neighbors = Actions.getPossibleNeighborActions((pursuer_x, pursuer_y), 1.0, layout.obstacles)
+                for neighbor in neighbors:
+                    x, y = neighbor
+                    if locations.obstacles[x][y] not in ["target-set", "pursuer-set"]:
+                        pursuerQueue.append({"position": neighbor, "time": time + 1}) 
+                        locations.obstacles[x][y] = "pursuer-set"
+            time += 1
+            #print targetQueue
+        #print "overCalculate targetset"
+        return targetSet
+
+    def calculateSuccessorSet(self, agentIndex, state, layout):
+        minValue = 0
+        values = []
+        successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        # print "successors", successors
+        # print len(successors)
+
+        for successor in successors:
+            tempGameState = state.deepCopy()
+            tempGameState.data.agentStates[agentIndex].setPosition(successor)
+
+            res = self.calculateCover(agentIndex, tempGameState, layout)
+            values.append(res)
+        print max(values)
+        if max(values) == min(values):
+            return AstarPursuer().getAction(state, agentIndex)
+        else:
+            return successors[values.index(min(values))]
+
+
+class MTSPursuer(Agent):
     def getAction(self, state):
-
-        return 0
-    def calculateCover():
-        return 0
-
-    def stateAbstraction():
-        return 0
-
-    def CRP():
-        """
-
-        """
         return 0
 
 
@@ -171,4 +240,4 @@ class ExpectimaxPursuer(Agent):
 
 
 def scoreEvaluationFunction(state):
-	return 0
+    return 0

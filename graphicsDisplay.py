@@ -145,7 +145,7 @@ class MultiAgentGraphics:
                 self.agentImages.append((agent, image))
         refresh()
 
-    def update(self, newState, agentIndex):
+    def update(self, newState, agentIndex, turnCount):
         
         agentIndex = agentIndex
         agentState = newState.agentStates[agentIndex]
@@ -155,13 +155,13 @@ class MultiAgentGraphics:
         prevState, prevImage = self.agentImages[agentIndex]
         # print "before move agents"
         if agentIndex == 0:
-            time.sleep(1/self.frameTime )
+            time.sleep(1/10 )
         self.moveAgent(agentState, prevState, prevImage)
         
         # print "after update.move"
         self.agentImages[agentIndex] = (agentState, prevImage)
 
-        self.infoPane.updateScore(newState.score)
+        self.infoPane.updateScore(turnCount)
         if 'pursuerDistances' in dir(newState):
             self.infoPane.updatePursuerDistances(newState.pursuerDistances)
 

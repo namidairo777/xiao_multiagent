@@ -41,6 +41,7 @@ class RandomTarget(Agent):
 class SimpleFleeTarget(Agent):
 
     def getAction(self, state, agentIndex):
+        print len(state.data.agentStates)
         neighbors = Actions.getPossibleActions(state.data.agentStates[0].getPosition(), 1.0, state.data.layout.obstacles)
         #print "neighbors", neighbors
         maxDistance = 0

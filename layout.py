@@ -74,6 +74,8 @@ class Layout:
 		
 		# print self.numPursuers
 def getLayout(name, back = 2):
+	if name == "random":
+		return getRandomMap()
 	if name.endswith('.lay'):
 		layout = tryToLoad('layouts/' + name)
 		if layout == None: layout = tryToLoad(name)
@@ -92,3 +94,6 @@ def tryToLoad(fullname):
 	f = open(fullname)
 	try: return Layout([line.strip() for line in f])
 	finally: f.close()
+
+def getRandomMap():
+	return 0
