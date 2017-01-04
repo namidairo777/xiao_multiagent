@@ -389,14 +389,16 @@ class Game:
         numAgents = len(self.agents)
 
         
+        startTime = time.time()
         #time.sleep(2)
         # Rules are different from pacman project
         # turnCount = 0
+
         while not self.gameOver:
             # make the plan for moving
             observation = self.state.deepCopy()
             #agentMovement = []
-            #print "turn", turnCount
+            turnStartTime = time.time()
             for agentIndex in range(len(self.agents)):
                 agent = self.agents[agentIndex]
                 action = agent.getAction(observation, agentIndex)
@@ -406,15 +408,36 @@ class Game:
                 self.state = self.state.generateSuccessor(action, agentIndex)     
                 self.display.update(self.state.data, agentIndex, self.turn)
                 if agentIndex != 0: 
-                    self.rules.collide(self.state, agentIndex)
+                    if self.rules.collide(self.state, agentIndex):
+                        endTime = time.time()
+                        cost = endTime - startTime
+                        print "time cost: ", cost
+                        self.gameOver = True
+                        self.writeLog(self.turn)
+                        #write log
+                        break
+                # 10 for roundMap
+                if self.turn > 1000:
+                    self.gameOver = True
+                    self.writeLog("NAN")
+                    break
 
+            
             self.turn += 1
+            
+            #while (time.time() - turnStartTime) <= 0.2:
+            #    pass
+            """
+            Real-time constraints 
+            """
+
             #update GameState
             #self.state = self.state.generateSuccessor(action, agentIndex)
 
 
             # display for moving 
-
+        
+        
 
         # Inform a learning agent of the game result
         for agentIndex, agent in enumerate(self.agents):
@@ -429,7 +452,13 @@ class Game:
                     self.unmute()
                     return
         self.display.finish()
-        
+    
+    def writeLog(self, log):
+        import csv
+        with open('logs/test2.csv', 'a') as csvfile:
+            spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+            spamwriter.writerow([log])
+
 
 
 

@@ -41,22 +41,45 @@ class RandomTarget(Agent):
 class SimpleFleeTarget(Agent):
 
     def getAction(self, state, agentIndex):
-        print len(state.data.agentStates)
+        # print len(state.data.agentStates)
         neighbors = Actions.getPossibleActions(state.data.agentStates[0].getPosition(), 1.0, state.data.layout.obstacles)
         #print "neighbors", neighbors
+        nearestPursuer = None
+        distanceToPursuer = 999
         maxDistance = 0
-        maxNeighbor = state.data.agentStates[0].getPosition()
-        for i in range(len(neighbors)):
-            distance = 0
-            for j in range(1, len(state.data.agentStates)):
-                distance += manhattanDistance(neighbors[i], state.data.agentStates[j].getPosition())
-            #print "neighbor", i, "distance", distance
-            if distance > maxDistance:
-                maxNeighbor = neighbors[i]
-                maxDistance = distance
-        #print "simple flee position", maxNeighbor
-        return maxNeighbor
+        maxNeighbors = []
 
+
+        for j in range(1, len(state.data.agentStates)):
+            distance = manhattanDistance(state.data.agentStates[0].getPosition(), state.data.agentStates[j].getPosition())
+            if distance < distanceToPursuer:
+                nearestPursuer = state.data.agentStates[j].getPosition()
+                distanceToPursuer = distance
+        """
+        for i in range(len(neighbors)):
+            distance = manhattanDistance(neighbors[i], nearestPursuer)
+            if distance > maxDistance:
+                maxNeighbors = []
+                maxNeighbors.append(neighbors[i])
+                maxDistance = distance
+            if distance == maxDistance:
+                maxNeighbors.append(neighbors[i])
+        
+
+        import random
+        random.shuffle(maxNeighbors)
+        return maxNeighbors[0]
+        """
+        for i in range(len(neighbors)):
+            distance = manhattanDistance(neighbors[i], nearestPursuer)
+            if distance > maxDistance:
+                maxNeighbors = []
+                maxNeighbors.append(neighbors[i])
+                maxDistance = distance
+            if distance == maxDistance:
+                maxNeighbors.append(neighbors[i])
+
+        return maxNeighbors[0]
 
 
 class DAMTarget(Agent):

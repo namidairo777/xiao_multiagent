@@ -13,14 +13,16 @@ class Layout:
 	A layout manages the static information about the game board
 
 	"""
-	def __init__(self, layoutText):
+	def __init__(self, layoutText, numAgents = 2):
 		self.width = len(layoutText[0])
 		self.height = len(layoutText)
 		self.obstacles = Grid(self.width, self.height, False)
 		self.agentPositions = []
 		self.numPursuers = 0
+		self.numAgents = numAgents
 		self.processLayoutText(layoutText)
 		self.layoutText = layoutText
+		
 
 	def getNumPursuers(self):
 		return self.numPursuers
@@ -77,7 +79,7 @@ class Layout:
 					vacancy.append((x, y))
 		# Shuffle it and give these position to agent
 		random.shuffle(vacancy)
-		for index in range(4):
+		for index in range(self.numAgents):
 			if index == 0:
 				self.agentPositions.append((0, vacancy[index]))
 			else:
@@ -101,26 +103,26 @@ class Layout:
 			
 		
 		# print self.numPursuers
-def getLayout(name, back = 2):
+def getLayout(name, numAgents = 2, back = 2):
 	if name == "random":
 		return getRandomMap()
 	if name.endswith('.lay'):
-		layout = tryToLoad('layouts/' + name)
-		if layout == None: layout = tryToLoad(name)
+		layout = tryToLoad('layouts/' + name, numAgents)
+		if layout == None: layout = tryToLoad(name, numAgents)
 	else:
-		layout = tryToLoad('layouts/' + name + '.lay')
-		if layout == None: layout = tryToLoad(name + '.lay')
+		layout = tryToLoad('layouts/' + name + '.lay', numAgents)
+		if layout == None: layout = tryToLoad(name + '.lay', numAgents)
 	if layout == None and back >= 0:
 		curdir = os.path.abspath('.')
 		os.chdir('..')
-		layout = getLayout(name, back - 1)
+		layout = getLayout(name, numAgents, back - 1)
 		os.chdir(curdir)
 	return layout
 
-def tryToLoad(fullname):
+def tryToLoad(fullname, numAgents):
 	if(not os.path.exists(fullname)): return None
 	f = open(fullname)
-	try: return Layout([line.strip() for line in f])
+	try: return Layout([line.strip() for line in f], numAgents)
 	finally: f.close()
 
 def getRandomMap():

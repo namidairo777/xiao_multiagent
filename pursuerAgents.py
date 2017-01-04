@@ -158,11 +158,11 @@ class CRAPursuer(Agent):
             x, y = state.data.agentStates[i].getPosition()
             locations.obstacles[x][y] = "pursuer-set"
             pursuerSet += 1 # add 1 to pursuer set count
-        print priorityQueue
+        #print priorityQueue
 
         # Loop until queue is null
         while len(priorityQueue) != 0:
-            print priorityQueue[0]
+            #print priorityQueue[0]
             try:
                 while len(priorityQueue) != 0 and priorityQueue[0]["time"] == time:
                     temp = priorityQueue.pop(0)
@@ -183,11 +183,18 @@ class CRAPursuer(Agent):
                                 pursuerSet += 1 # set added by 1
                 time += 1
             except IndexError:
-                print priorityQueue
+                #print priorityQueue
                 print "length of queue", len(priorityQueue), "list over"
         return pursuerSet
 
     def calculateSuccessorSet(self, agentIndex, state, layout):
+
+        """
+        ratio = 0.3
+        import random
+        if random.random() < ratio:
+            return AstarPursuer().getAction(state, agentIndex)
+        """
         # max value for pursuer-set
         maxValue = 0
         values = []
@@ -284,10 +291,12 @@ class SpeedUpCRAPursuer(Agent):
 
             res = self.calculateCover(agentIndex, tempGameState, layout)
             values.append(res)
-        print max(values)
+        # print max(values)
         if max(values) == min(values):
+            print "Go astar", state.data.agentStates[2].getPosition()
             return AstarPursuer().getAction(state, agentIndex)
         else:
+            print "surrounding"
             return successors[values.index(min(values))]
 
 

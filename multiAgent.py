@@ -12,6 +12,7 @@ from game import Actions
 from util import nearestPoint
 from util import manhattanDistance
 import util, layout
+from layout import Layout
 import sys, types, time, random, os
 
 #########################
@@ -54,7 +55,7 @@ class GameState:
         """
         # Check that successors exist
         if self.isWin() or self.isLose(): 
-            time.sleep(2)
+            # time.sleep(2)
             raise Exception('Game over')
 
         # Copy current state
@@ -220,8 +221,11 @@ class ClassicGameRules:
         return 0
 
     def collide(self, state, agentIndex):
-    	if state.data.agentStates[0].getPosition() == state.data.agentStates[agentIndex].getPosition():
-    		state.data._win = True
+        if state.data.agentStates[0].getPosition() == state.data.agentStates[agentIndex].getPosition():
+            state.data._win = True
+            return True
+        else:
+            return False
 
 class TargetRules:
     """
@@ -249,7 +253,6 @@ class TargetRules:
         # Update configuration
         # vector = Actions.directionToVector(action, TargetRules.TARGET_SPEED)
         targetState.configuration = targetState.configuration.generateSuccessor(action)
-        #print "Target ", state.data.agentStates[0].getPosition()
         #
     applyAction = staticmethod(applyAction)
 
@@ -282,7 +285,6 @@ class PursuerRules:
         # speed = PursuerRules.PURSUER_SPEED
         #vector = Actions.directionToVector(action, speed)
         pursuerState.configuration = pursuerState.configuration.generateSuccessor(action)
-        #print "Pursuer ", pursuerIndex, state.data.agentStates[pursuerIndex].getPosition()
         
 
     applyAction = staticmethod(applyAction)
@@ -301,19 +303,30 @@ def readCommand(param):
     """
 
     """
+    
     args = dict()
-    args["layout"] = layout.getLayout(param[0] + ".lay")
+    if len(param) > 3:
+        args["numAgents"] = int(param[2])
+        print "numAgents: ", args["numAgents"]
+    args["layout"] = layout.getLayout(param[0] + ".lay", args["numAgents"])
     import targetAgents as targets
     import pursuerAgents as pursuers
     import graphicsDisplay as graphics
     args["target"] = targets.SimpleFleeTarget()
     # creat several pursuers
-    print "agent num", args["layout"].getNumPursuers()
-    if len(param) > 1:
+    # print "agent num", args["layout"].getNumPursuers()
+    # print args["layout"].getNumPursuers()
+    if param[1] == "astar":
         args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
-    else:
+    elif param[1] == "cra":
+        args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+    elif param[1] == "speedupCRA":
         args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+
     args["display"] = graphics.MultiAgentGraphics()
+    if len(param) > 3:
+        args["numGames"] = int(param[3])
+    
     return args
 
 def loadAgent():
@@ -324,16 +337,17 @@ def loadAgent():
 
 # def replay():
 
-def runGames(layout, target, pursuers, display, numGames = 1, record = 1, numTraining = 0, catchException = False, timeout = 30):
+def runGames():
     
-    import __main__
-    __main__.__dict__['_display'] = display
-    rules = ClassicGameRules(timeout)
+    rules = ClassicGameRules()
     games = []
-    #print sys.argv[1:]
-    for i in range(numGames):
-        game = rules.newGame(layout, target, pursuers, display, catchException)
+    args = readCommand(sys.argv[1:])
+    for i in range(args["numGames"]):
+        args = readCommand(sys.argv[1:])
+        # print args["layout"].getNumPursuers() 
+        game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
         game.run()
+
 
     return games
 
@@ -346,6 +360,6 @@ if __name__ == '__name__':
 
     pass
     
-args = readCommand(sys.argv[1:])
+# args = readCommand(sys.argv[1:])
 
-runGames(args["layout"], args["target"], args["pursuers"], args["display"])
+runGames()

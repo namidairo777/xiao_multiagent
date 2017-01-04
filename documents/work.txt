@@ -1,9 +1,21 @@
 Real time:
-11 tiles per second
+10 tiles per second
 a tile : 8 x 8 pixel
 
 Empirical evaluation:
 
 Map: 1. homemade map 2. game map (big map)
 
+experiment:
+- basicmap 2pursuer (max 100 turn)
+	- speedupcra
+	- astar
 
+- bigmap 3 pursuer (max 500 turn)
+
+
+
+
+2 Graphs to do tests:
+ - Interception rate
+ - time

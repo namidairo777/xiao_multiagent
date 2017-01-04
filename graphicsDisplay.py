@@ -11,7 +11,7 @@ from game import Directions
 #   graphics display code
 ###########################
 
-DEFAULT_GRID_SIZE = 30.0
+DEFAULT_GRID_SIZE = 12.0
 INFO_PANE_HEIGHT = 35
 BACKGROUND_COLOR = formatColor(1.0, 1.0, 1.0)
 OBSTACLE_COLOR = formatColor(0.0, 0.0, 0.0)
@@ -99,7 +99,7 @@ class MultiAgentGraphics:
         self.drawStaticObjects(state)
         
         self.drawAgentObjects(state)
-        time.sleep(1)
+        # time.sleep(1)
         # information
         self.previousState = state
         
@@ -149,13 +149,12 @@ class MultiAgentGraphics:
         
         agentIndex = agentIndex
         agentState = newState.agentStates[agentIndex]
-        print newState.agentStates[1]
+        # print newState.agentStates[1]
 
         # if self.agentImages[agentIndex][0].isTarget != agentState.isTarget: self.swapImages(agentIndex, agentState)
         prevState, prevImage = self.agentImages[agentIndex]
         # print "before move agents"
-        if agentIndex == 0:
-            time.sleep(1/10 )
+        
         self.moveAgent(agentState, prevState, prevImage)
         
         # print "after update.move"
