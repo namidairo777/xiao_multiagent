@@ -49,14 +49,42 @@ class Layout:
 		P - Pursuer
 		"""
 		# print layoutText
+		randomFlag = False
 		maxY = self.height - 1
 		for y in range(self.height):
 			for x in range(self.width):
 				layoutChar = layoutText[maxY - y][x]
 				self.processLayoutChar(x, y, layoutChar)
+		if self.numPursuers == 0:
+			self.randomPosition()
 		
 		self.agentPositions.sort()
 		self.agentPositions = [(i == 0, pos) for i, pos in self.agentPositions]
+
+	def randomPosition(self):
+		"""
+		For small map, we use 2 pursuers
+		For Big map, use 3.
+		"""
+
+
+		import random
+		# Random target
+		vacancy = []
+		for x in range(self.width):
+			for y in range(self.height):
+				if self.obstacles[x][y] == False:
+					vacancy.append((x, y))
+		# Shuffle it and give these position to agent
+		random.shuffle(vacancy)
+		for index in range(4):
+			if index == 0:
+				self.agentPositions.append((0, vacancy[index]))
+			else:
+				self.numPursuers += 1
+				self.agentPositions.append((self.numPursuers, vacancy[index]))
+
+
 
 	def processLayoutChar(self, x, y, layoutChar):
 		#print self.height, self.width

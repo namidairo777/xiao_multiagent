@@ -1,0 +1,9 @@
+Real time:
+11 tiles per second
+a tile : 8 x 8 pixel
+
+Empirical evaluation:
+
+Map: 1. homemade map 2. game map (big map)
+
+

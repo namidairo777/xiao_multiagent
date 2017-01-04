@@ -312,7 +312,7 @@ def readCommand(param):
     if len(param) > 1:
         args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
     else:
-        args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+        args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
     args["display"] = graphics.MultiAgentGraphics()
     return args
 

@@ -124,9 +124,84 @@ class Position:
         self.f = h
         self.parent = parent
 
-
-
 class CRAPursuer(Agent):
+    """
+    CRA:
+    Smax 
+    Spra*
+    Cmax
+    Cpra*    
+    """
+
+
+    def getAction(self, state, agentIndex):
+        return self.calculateSuccessorSet(agentIndex, state, state.data.layout)
+
+    
+    def calculateCover(self, agentIndex, state, layout):
+        # targetSet = 0
+        pursuerSet = 0
+        priorityQueue = []
+        time = 0
+
+        # Initial layout from obstacle map
+        locations = layout.deepCopy()
+        
+        # Push initial target into queue
+        priorityQueue.append({"position": state.data.agentStates[0].getPosition(), "type": "target", "time": time})
+        x, y = state.data.agentStates[0].getPosition()
+        locations.obstacles[x][y] = "target-set"
+        
+        # Push initial pursuers into queue
+        for i in range(1, layout.getNumPursuers() + 1):
+            priorityQueue.append({"position": state.data.agentStates[i].getPosition(), "type": "pursuer", "time": time})
+            x, y = state.data.agentStates[i].getPosition()
+            locations.obstacles[x][y] = "pursuer-set"
+            pursuerSet += 1 # add 1 to pursuer set count
+        print priorityQueue
+
+        # Loop until queue is null
+        while len(priorityQueue) != 0:
+            print priorityQueue[0]
+            try:
+                while len(priorityQueue) != 0 and priorityQueue[0]["time"] == time:
+                    temp = priorityQueue.pop(0)
+                    (agent_x, agent_y) = temp["position"]
+                    typeName = temp["type"]
+
+                    neighbors = Actions.getPossibleNeighborActions((agent_x, agent_y), 1.0, layout.obstacles)
+                    #print neighbors
+                    for neighbor in neighbors:
+                        x, y = neighbor
+                        if locations.obstacles[x][y] not in ["target-set", "pursuer-set"]:
+                            # push to queue
+                            priorityQueue.append({"position": neighbor, "type": typeName, "time": time + 1}) 
+                            if typeName == "target":
+                                locations.obstacles[x][y] = "target-set"
+                            else:
+                                locations.obstacles[x][y] = "pursuer-set"
+                                pursuerSet += 1 # set added by 1
+                time += 1
+            except IndexError:
+                print priorityQueue
+                print "length of queue", len(priorityQueue), "list over"
+        return pursuerSet
+
+    def calculateSuccessorSet(self, agentIndex, state, layout):
+        # max value for pursuer-set
+        maxValue = 0
+        values = []
+        successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        
+        # Frome 4 possible successors, choose one with best value 
+        for successor in successors:
+            tempGameState = state.deepCopy()
+            tempGameState.data.agentStates[agentIndex].setPosition(successor)
+            res = self.calculateCover(agentIndex, tempGameState, layout)
+            values.append(res)
+        return successors[values.index(max(values))]
+
+class SpeedUpCRAPursuer(Agent):
     """
     CRA:
     Smax 
@@ -214,6 +289,8 @@ class CRAPursuer(Agent):
             return AstarPursuer().getAction(state, agentIndex)
         else:
             return successors[values.index(min(values))]
+
+
 
 
 class MTSPursuer(Agent):
