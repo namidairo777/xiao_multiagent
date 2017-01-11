@@ -307,7 +307,7 @@ def readCommand(param):
     args = dict()
     if len(param) > 3:
         args["numAgents"] = int(param[2])
-        print "numAgents: ", args["numAgents"]
+        #print "numAgents: ", args["numAgents"]
     args["layout"] = layout.getLayout(param[0] + ".lay", args["numAgents"])
     import targetAgents as targets
     import pursuerAgents as pursuers

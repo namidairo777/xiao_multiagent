@@ -23,11 +23,16 @@ experiment:
 
 Experiments:
 1.cover heuristic & speedup heuristic 
-	round map with 2 pursuer 10 times
+	Idea: percentage speedup
+	round map with 2 pursuer 10 times max 1000
 	vancacy map with 2 pursuer 10 times
-	test: 18%
+	maze map with 2 pursuer 10 times
 	
 
 
 
+
 2. speedup heuristic & a star
+	Idea: turns and interception rate
+	round map with 2 pursuer 20 times: max 500
+	maze map with 2 pursuer 50 times: max 1000

@@ -31,7 +31,7 @@ class InfoPane:
         self.width = (layout.width) * gridSize
         self.base = (layout.height + 1) * gridSize
         self.height = INFO_PANE_HEIGHT
-        self.fontSize = 24
+        self.fontSize = int(24 * DEFAULT_GRID_SIZE / 24)
         self.textColor = TARGET_COLOR
         self.drawPane()
 

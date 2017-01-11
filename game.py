@@ -419,13 +419,13 @@ class Game:
                         self.gameOver = True
                         
                         #write game time
-                        #self.writeLog(self.turn)
+                        self.writeLog(self.turn)
                         #write log
                         break
                 # 10 for roundMap
                 if self.turn > 1000:
                     self.gameOver = True
-                    #self.writeLog("NAN")
+                    self.writeLog("NAN")
                     break
 
             
@@ -461,12 +461,12 @@ class Game:
     
     def writeLog(self, log):
         import csv
-        with open('logs/test2.csv', 'a') as csvfile:
+        with open('logs/turn_count_maze1_astar_3pursuer.csv', 'a') as csvfile:
             spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             spamwriter.writerow([log])
     def writeStepTimeLog(self, log):
         import csv
-        with open('logs/step_time_cra.csv', 'a') as csvfile:
+        with open('logs/step_time_speedupcra.csv', 'a') as csvfile:
             spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             spamwriter.writerow([log])
 

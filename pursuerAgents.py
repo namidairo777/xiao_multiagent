@@ -198,7 +198,7 @@ class CRAPursuer(Agent):
         # max value for pursuer-set
         maxValue = 0
         values = []
-        successors = Actions.getPossibleNeighborActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
         
         # Frome 4 possible successors, choose one with best value 
         for successor in successors:
@@ -339,6 +339,6 @@ def scoreEvaluationFunction(state):
 
 def writeStepTimeLog(title, log):
     import csv
-    #with open('logs/step_time_vancancyMap_' + title, 'a') as csvfile:
-     #   spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-     #   spamwriter.writerow([log])
+    #with open('logs/step_time_vacancy_' + title, 'a') as csvfile:
+    #    spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+    #    spamwriter.writerow([log])
