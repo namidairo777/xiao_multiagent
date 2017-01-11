@@ -19,3 +19,15 @@ experiment:
 2 Graphs to do tests:
  - Interception rate
  - time
+
+
+Experiments:
+1.cover heuristic & speedup heuristic 
+	round map with 2 pursuer 10 times
+	vancacy map with 2 pursuer 10 times
+	test: 18%
+	
+
+
+
+2. speedup heuristic & a star

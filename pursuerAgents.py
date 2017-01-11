@@ -198,13 +198,18 @@ class CRAPursuer(Agent):
         # max value for pursuer-set
         maxValue = 0
         values = []
-        successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        successors = Actions.getPossibleNeighborActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
         
         # Frome 4 possible successors, choose one with best value 
         for successor in successors:
             tempGameState = state.deepCopy()
             tempGameState.data.agentStates[agentIndex].setPosition(successor)
+            import time
+            startTime = time.time()
             res = self.calculateCover(agentIndex, tempGameState, layout)
+
+            endTime = time.time()
+            writeStepTimeLog('cra.csv', endTime - startTime)
             values.append(res)
         return successors[values.index(max(values))]
 
@@ -288,15 +293,19 @@ class SpeedUpCRAPursuer(Agent):
         for successor in successors:
             tempGameState = state.deepCopy()
             tempGameState.data.agentStates[agentIndex].setPosition(successor)
-
+            # time of calculate
+            import time
+            startTime = time.time()
             res = self.calculateCover(agentIndex, tempGameState, layout)
+            endTime = time.time()
+            writeStepTimeLog('speedupcra.csv', endTime - startTime)
             values.append(res)
         # print max(values)
         if max(values) == min(values):
-            print "Go astar", state.data.agentStates[2].getPosition()
+            #print "Go astar", state.data.agentStates[2].getPosition()
             return AstarPursuer().getAction(state, agentIndex)
         else:
-            print "surrounding"
+            #print "surrounding"
             return successors[values.index(min(values))]
 
 
@@ -327,3 +336,9 @@ class ExpectimaxPursuer(Agent):
 
 def scoreEvaluationFunction(state):
     return 0
+
+def writeStepTimeLog(title, log):
+    import csv
+    #with open('logs/step_time_vancancyMap_' + title, 'a') as csvfile:
+     #   spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+     #   spamwriter.writerow([log])

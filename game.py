@@ -397,15 +397,19 @@ class Game:
         while not self.gameOver:
             # make the plan for moving
             observation = self.state.deepCopy()
-            #agentMovement = []
-            turnStartTime = time.time()
+            ##agentMovement = []
+            #turnStartTime = time.time()
             for agentIndex in range(len(self.agents)):
+                # time for step move
+                stepStartTime = time.time()
                 agent = self.agents[agentIndex]
                 action = agent.getAction(observation, agentIndex)
                 self.moveHistory.append((agentIndex, action))
-                #agentMovement.append((agentIndex, action))
+                
                 #update GameState
-                self.state = self.state.generateSuccessor(action, agentIndex)     
+                self.state = self.state.generateSuccessor(action, agentIndex)
+                #stepEndTime = time.time()
+                #self.writeStepTimeLog(stepEndTime - stepStartTime)
                 self.display.update(self.state.data, agentIndex, self.turn)
                 if agentIndex != 0: 
                     if self.rules.collide(self.state, agentIndex):
@@ -413,13 +417,15 @@ class Game:
                         cost = endTime - startTime
                         print "time cost: ", cost
                         self.gameOver = True
-                        self.writeLog(self.turn)
+                        
+                        #write game time
+                        #self.writeLog(self.turn)
                         #write log
                         break
                 # 10 for roundMap
                 if self.turn > 1000:
                     self.gameOver = True
-                    self.writeLog("NAN")
+                    #self.writeLog("NAN")
                     break
 
             
@@ -456,6 +462,11 @@ class Game:
     def writeLog(self, log):
         import csv
         with open('logs/test2.csv', 'a') as csvfile:
+            spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+            spamwriter.writerow([log])
+    def writeStepTimeLog(self, log):
+        import csv
+        with open('logs/step_time_cra.csv', 'a') as csvfile:
             spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             spamwriter.writerow([log])
 

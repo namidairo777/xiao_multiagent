@@ -276,10 +276,10 @@ class PursuerRules:
     getLegalActions = staticmethod(getLegalActions)
 
     def applyAction(state, action, pursuerIndex):
-        legal = PursuerRules.getLegalActions(state, pursuerIndex)
+        #legal = PursuerRules.getLegalActions(state, pursuerIndex)
         
-        if action not in legal:
-            raise Exception("Illegal pursuer action" + str(action))
+        #if action not in legal:
+        #    raise Exception("Illegal pursuer action" + str(action))
 
         pursuerState = state.data.agentStates[pursuerIndex]
         # speed = PursuerRules.PURSUER_SPEED
@@ -320,7 +320,7 @@ def readCommand(param):
         args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
     elif param[1] == "cra":
         args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
-    elif param[1] == "speedupCRA":
+    elif param[1] == "speedupcra":
         args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
 
     args["display"] = graphics.MultiAgentGraphics()
