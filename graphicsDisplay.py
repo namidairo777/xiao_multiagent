@@ -97,7 +97,7 @@ class MultiAgentGraphics:
         # self.drawDistributions(state)
         self.distributionImages = None 
         self.drawStaticObjects(state)
-        time.sleep(5)
+        #time.sleep(5)
         self.drawAgentObjects(state)
         
         # information
