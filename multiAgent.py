@@ -301,31 +301,44 @@ class PursuerRules:
 
 def readCommand(param):
     """
-
+    Python CLI command line interface
+    param [map layout, pursuer, agent numbers, game numbers]
     """
-    
+    import targetAgents as targets # target class
+    import pursuerAgents as pursuers # pursuer class
+    import graphicsDisplay as graphics # display class
+
+    # dictionary data structure for parameters 
     args = dict()
+    # default 1 target + 2 pursuers
+    args["numAgents"] = 3 
     if len(param) > 3:
         args["numAgents"] = int(param[2])
-        #print "numAgents: ", args["numAgents"]
-    args["layout"] = layout.getLayout(param[0] + ".lay", args["numAgents"])
-    import targetAgents as targets
-    import pursuerAgents as pursuers
-    import graphicsDisplay as graphics
-    args["target"] = targets.SimpleFleeTarget()
-    # creat several pursuers
-    # print "agent num", args["layout"].getNumPursuers()
-    # print args["layout"].getNumPursuers()
-    if param[1] == "astar":
-        args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
-    elif param[1] == "cra":
-        args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
-    elif param[1] == "speedupcra":
-        args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
-
-    args["display"] = graphics.MultiAgentGraphics()
-    if len(param) > 3:
+    # default 1 game
+    args["numGames"] = 1
+    if len(param) > 2:
         args["numGames"] = int(param[3])
+
+    # map layout param[0]
+    args["layout"] = layout.getLayout("basicMap.lay", args["numAgents"])
+    if len(param) > 0:
+        args["layout"] = layout.getLayout(param[0] + ".lay", args["numAgents"])
+    
+    # target algorithm 
+    args["target"] = targets.SimpleFleeTarget()
+    # pursuer algorithm: param[1]
+    # default pursuer algorithm
+    args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+    if len(param) > 1:
+        if param[1] == "astar":
+            args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+        elif param[1] == "cra":
+            args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+        elif param[1] == "speedupcra":
+            args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+
+    # graphic display 
+    args["display"] = graphics.MultiAgentGraphics()
     
     return args
 
