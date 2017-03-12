@@ -388,9 +388,9 @@ class Game:
         agentIndex = self.startingIndex
         numAgents = len(self.agents)
 
-        
+        time.sleep(10)
         startTime = time.time()
-        #time.sleep(2)
+        
         # Rules are different from pacman project
         # turnCount = 0
 
@@ -398,7 +398,7 @@ class Game:
             # make the plan for moving
             observation = self.state.deepCopy()
             ##agentMovement = []
-            #turnStartTime = time.time()
+            turnStartTime = time.time()
             for agentIndex in range(len(self.agents)):
                 # time for step move
                 stepStartTime = time.time()
@@ -425,14 +425,14 @@ class Game:
                 # 10 for roundMap
                 if self.turn > 1000:
                     self.gameOver = True
-                    self.writeLog("NAN")
+                    # self.writeLog("NAN")
                     break
 
             
             self.turn += 1
             
-            #while (time.time() - turnStartTime) <= 0.2:
-            #    pass
+            while (time.time() - turnStartTime) <= 0.1:
+                pass
             """
             Real-time constraints 
             """

@@ -17,8 +17,9 @@ BACKGROUND_COLOR = formatColor(1.0, 1.0, 1.0)
 OBSTACLE_COLOR = formatColor(0.0, 0.0, 0.0)
 INFO_PANE_COLOR = formatColor(.1, .1, 0)
 SCORE_COLOR = formatColor(.9, .9, .9)
-TARGET_COLOR = formatColor(1.0, 0, 0)
-PURSUER_COLOR = formatColor(0.0, .8, .8)
+TARGET_COLOR = formatColor(0, 0.9, 0)
+PURSUER_COLOR = formatColor(0.9, 0, 0)
+FONT_COLOR = formatColor(0.0, 0.0, 0.0)
 
 TARGET_SCALE = 0.5
 PURSUER_SCALE = 0.5
@@ -32,7 +33,7 @@ class InfoPane:
         self.base = (layout.height + 1) * gridSize
         self.height = INFO_PANE_HEIGHT
         self.fontSize = int(24 * DEFAULT_GRID_SIZE / 24)
-        self.textColor = TARGET_COLOR
+        self.textColor = FONT_COLOR
         self.drawPane()
 
     def toScreen(self, pos, y = None):
