@@ -11,6 +11,8 @@ According to pacman rules and player frame rate smooth analysis,
 Currently, up, down, left and right, only four directions movement. 
 ## Related research
 A Cover-Based Approach to Multi-Agent Moving Target Pursuit
+## Proposed method
+![Proposed](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/speedup_cover_heuristic.png)
 ## CLI program
 	python multiagent.py [map] [algorithm] [agent number] [game number]
 Example: 
@@ -22,7 +24,16 @@ python multiagent.py basicMap speedupcra 3 10
 2. Refinement
 3. cover: whole map searching costs too much time
 ## Development environment
-Programming Language: Python 2.7
+- Python 2.7
+- Ubuntu 16.04
+- Inter Core i7-4790
+## Demo
+- Round Map (A star algoritm)
+![Astar](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/astar.png)
+- Round Map (Proposed method)
+![Proposed](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/speedupcra.gif)
+- Round Map (Proposed method)
+![BigMap](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/bigMap.gif)
 ## Project specially thanks to 
 Pacman project of Berkeley AI CS188
 http://ai.berkeley.edu/home.html
