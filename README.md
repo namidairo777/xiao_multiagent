@@ -17,10 +17,7 @@ Example:
 ```python
 python multiagent.py basicMap speedupcra 3 10
 ```
-# Work to do
-1. Abstraction
-2. Refinement
-3. cover: whole map searching costs too much time
+
 ## Development environment
 - Python 2.7
 - Ubuntu 16.04
@@ -32,6 +29,10 @@ python multiagent.py basicMap speedupcra 3 10
 ![Proposed](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/speedupcra.gif)
 - Round Map (Proposed method)
 ![BigMap](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/bigMap.gif)
+# Work to do
+1. Abstraction
+2. Refinement
+3. cover: whole map searching costs too much time
 ## Project specially thanks to 
 Pacman project of Berkeley AI CS188
 http://ai.berkeley.edu/home.html
