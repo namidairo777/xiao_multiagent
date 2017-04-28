@@ -23,3 +23,48 @@ class Node(object):
 
 
 
+class Abstraction(object):
+	"""A class for map abstraction"""
+	def __init__(self):
+		# map 
+		
+
+	def mapToGraph(self, obstacles):
+		"""
+		Translate current 2-dimension array to node array
+		"""
+		# obstacles to node array
+		graph = []
+		for x in range(len(obstacles)):
+			row = []
+			for y in range(len(obstacles[0])):
+				node = None
+				if not obstacles[x][y]:
+					# if (x, y) is not obstacle
+					node = Node()
+					node.x = x
+					node.y = y
+				row.append(node)
+			graph.append(row)
+		self.nodeArray = graph
+
+		# Assign neighbors
+		for x in range(len(obstacles)):
+			for y in range(len(obstacles[0])):
+				self.nodeArray[][]
+				if node[x][y]:
+					
+					node = Node()
+					node.x = x
+					node.y = y
+				row.append(node)
+			graph.append(row)
+
+	def getAbstractMap(self):
+		"""
+		graph -> abstraction map
+
+		"""
+
+
+
