@@ -388,7 +388,7 @@ class Game:
         agentIndex = self.startingIndex
         numAgents = len(self.agents)
 
-        time.sleep(10)
+        # time.sleep(10)
         startTime = time.time()
         
         # Rules are different from pacman project

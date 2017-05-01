@@ -10,10 +10,12 @@ class Node(object):
 	def __init__(self, level):
 		self.x = 0 				# coordinate x
 		self.y = 0				# coordinate y
+		self.val = 0
 		self.level = level      # abstraction level
 		self.isAbstracted = False    # abtracted or not
 		self.neighbors = []		# neighbor nodes
-		self.children = []		# child nodes ( abtraction level - 1)
+		self.children = []		# child nodes (abtraction level - 1)
+		self.childrenNeighbors = [] # child's neighbors (abtraction level - 1), convinient for connnect graph
 
 	def addNeighbors(self, node):
 		"""
@@ -38,6 +40,7 @@ class Abstraction(object):
 		self.height = len(obstacles)
 		self.width = len(obstacles[0])
 		graph = []
+		i = 1
 		for x in range(len(obstacles)):
 			row = []
 			for y in range(len(obstacles[0])):
@@ -47,6 +50,8 @@ class Abstraction(object):
 					node = Node()
 					node.x = x
 					node.y = y
+					node.val = i
+					i += 1 
 				row.append(node)
 			graph.append(row)
 		self.nodeArray = graph
@@ -81,39 +86,77 @@ class Abstraction(object):
 
 
 
-	def getAbstractMap(self, obstacles):
+	def getAbstractArray(self, obstacles):
 		"""
 		graph -> abstraction map
 		"""
 		# map to graph with neighbors
 		self.mapToGraph(obstacles)
 		self.addNeighbors()
-
+		abstractNodeArray = []
 		# Abstract map
 		queue = [self.head]
 		# First node neighbors
 		while len(queue) != 0:
 			# node 1
 			node1 = queue.pop(0)
-			# Add to queue
+			node1.isAbstracted = True # mark
+			# Add node1 neighbors to queue
+			singleNode = True
 			for neighbor in node1.neighbors:
-				queue.append(neighbor)
+				if neighbor not in queue and not neighbor.isAbstracted:
+					queue.append(neighbor)
+					singleNode = False
+			if singleNode:
+				abstractNode = Node(node1.level + 1)
+				abstractNode.children.append(node1)
+				break
+			# Easy to pop
+			def popNode(node, array):
+				for i in range(len(array)):
+					if array[i] is node:
+						array.pop(i)
+						break
+				return
+
 			# node 2
-			node2 = queue.pop(0)
+			node2 = None
+			for node in node1.neighbors:
+				if not node.isAbstracted:
+					node2 = node
+					node2.isAbstracted = True # mark
+					popNode(node, queue)			
+			# Add node1 neighbors to queue
 			for neighbor in node2.neighbors:
-				queue.append(neighbor)
+				if neighbor not in queue and not neighbor.isAbstracted:
+					queue.append(neighbor)
 
+			abstractNode = Node(node1.level + 1)
+			abstractNode.children.append(node1)
+			abstractNode.children.append(node2)
+			for neighbor in (node1.neighbors + node2.neighbors):
+				if neighbor not in [node1, node2]:
+					abstractNode.childrenNeighbors.append(neighbor)
+			# Add to list 
+			abstractNodeArray.append(abstractNode)
+			# set position x and y
 
+		return self.abstractNodeArray
 
-		return self.head
+	def getAbstractGraph(self, graph):
+		for node in graph:
+			
+			# Assign every other node which has these neighbor node as this node's neighbor
+
 
 
 
 
 class Test(object):
+	
 	"""Test class"""
 	def do(self):
-		obstacles = [[True for i in range(10)] for j in range(10)]
+		obstacles = [[False for i in range(10)] for j in range(10)]
 		a = Abstraction()
 		a.mapToGraph(obstacles)
 
