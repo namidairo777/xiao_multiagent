@@ -17,6 +17,11 @@ Example:
 ```python
 python multiagent.py basicMap speedupcra 3 10
 ```
+## Map Abstraction
+1. Obstacles 2-dimension array to unconnected graph
+2. Unconnected graph to connected graph
+3. 2 connected node to a abstracted node (level + 1) 
+3. Abstracted graph (level + 1)
 
 ## Development environment
 - Python 2.7
