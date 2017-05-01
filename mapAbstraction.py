@@ -23,8 +23,6 @@ class Node(object):
 		"""
 		self.neighbor.append(node)
 
-
-
 class Abstraction(object):
 	"""A class for map abstraction"""
 	def __init__(self):
@@ -84,8 +82,6 @@ class Abstraction(object):
 						if self.nodeArray[x][y+1]:
 							currentNode.neighbors.append(self.nodeArray[x][y+1])
 
-
-
 	def getAbstractArray(self, obstacles):
 		"""
 		graph -> abstraction map
@@ -144,9 +140,20 @@ class Abstraction(object):
 		return self.abstractNodeArray
 
 	def getAbstractGraph(self, graph):
+		"""
+		Translate unconnectec graph to connected graph
+		O()
+		"""
+		# Assign every other node which has these neighbor node as this node's neighbor 
 		for node in graph:
+			# for every node, check wether in 
+			for child in node.children:
+				for neighborNode in graph:
+					if child in neighborNode.childrenNeighbors and neighborNode not in node.neighbors:
+						node.neighbors.append(neighborNode)
+
+
 			
-			# Assign every other node which has these neighbor node as this node's neighbor
 
 
 
