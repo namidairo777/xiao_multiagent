@@ -308,7 +308,94 @@ class SpeedUpCRAPursuer(Agent):
             #print "surrounding"
             return successors[values.index(min(values))]
 
+class AbstractCoverPursuer(Agent):
+    """
+    Abstract to a higher level
+    """
+    def __init__(self, abstractionMap):
+        self.abstraction = abstractionMap
 
+    def getAction(self, state, agentIndex):
+        return self.calculateSuccessorSet(agentIndex, state, state.data.layout)
+
+    def calculateCover(self, agentIndex, state, layout):
+        """
+        We use node pointer instead of coordinate position
+        """
+        targetSet = 0
+        targetQueue = []
+        pursuerQueue = []
+        time = 0
+        locations = layout.deepCopy()
+        # print type(agentIndex) #state.data.agentStates[agentIndex].getPosition()
+        targetNode = self.abstraction.getNode(state.data.agentStates[0].getPosition())
+        targetQueue.append({"node": targetNode, "time": time})
+        # x, y = state.data.agentStates[0].getPosition()
+        targetNode.markAs = "target-set"
+        targetSet += len(targetNode.children)
+        #print targetQueue
+        for i in range(1, layout.getNumPursuers() + 1):
+            pursuerNode = self.abstraction.getNode(state.data.agentStates[i].getPosition())
+            pursuerQueue.append({"node": pursuerNode, "time": time})
+            pursuerNode.markAs = "pursuer-set"
+        #print targetQueue
+        while len(targetQueue) != 0 :
+
+            #print "len of target:", len(targetQueue), "len of pursuer", len(pursuerQueue)
+            # current target
+            #print len(targetQueue)
+            while len(targetQueue) > 0 and targetQueue[0]["time"] == time:
+                temp = targetQueue.pop(0)
+                tempNode = temp["node"]
+                tempTime = temp["time"]
+                #print "time", tempTime 
+                #print targetQueue
+                # neighbors = Actions.getPossibleNeighborActions((target_x, target_y), 1.0, layout.obstacles)
+                #print neighbors
+                for neighbor in tempNode.neighbors:
+                    if neighbor.markAs not in ["target-set", "pursuer-set"]:
+                        targetQueue.append({"node": neighbor, "time": time + 1}) 
+                        neighbor.markAs = "target-set"
+                        targetSet += 1
+            # current pursuer
+            #print "targetset", targetSet
+            #print len(pursuerQueue)
+            while len(pursuerQueue) > 0 and pursuerQueue[0]["time"] == time:
+                tempNode = pursuerQueue.pop(0)["node"]
+                for neighbor in tempNode.neighbors:
+                    if neighbor.markAs not in ["target-set", "pursuer-set"]:
+                        pursuerQueue.append({"node": neighbor, "time": time + 1}) 
+                        neighbor.markAs = "pursuer-set"
+            time += 1
+            #print targetQueue
+        #print "overCalculate targetset"
+        self.abstraction.clearMark()
+        return targetSet
+
+    def calculateSuccessorSet(self, agentIndex, state, layout):
+        minValue = 0
+        values = []
+        successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        # print "successors", successors
+        # print len(successors)
+
+        for successor in successors:
+            tempGameState = state.deepCopy()
+            tempGameState.data.agentStates[agentIndex].setPosition(successor)
+            # time of calculate
+            import time
+            startTime = time.time()
+            res = self.calculateCover(agentIndex, tempGameState, layout)
+            endTime = time.time()
+            # writeStepTimeLog('speedupcra.csv', endTime - startTime)
+            values.append(res)
+        # print max(values)
+        if max(values) == min(values):
+            #print "Go astar", state.data.agentStates[2].getPosition()
+            return AstarPursuer().getAction(state, agentIndex)
+        else:
+            #print "surrounding"
+            return successors[values.index(min(values))]
 
 
 class MTSPursuer(Agent):

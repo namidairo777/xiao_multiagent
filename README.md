@@ -17,6 +17,7 @@ Example:
 ```python
 python multiagent.py basicMap speedupcra 3 10
 ```
+Algorithm: astar, cra (cover-hueristic), speedupcra (speedup cover), abstraction(speedup cra using abstraction)
 ## Map Abstraction
 1. Obstacles 2-dimension array to unconnected graph
 2. Unconnected graph to connected graph

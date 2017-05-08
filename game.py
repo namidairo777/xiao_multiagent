@@ -431,8 +431,8 @@ class Game:
             
             self.turn += 1
             
-            while (time.time() - turnStartTime) <= 0.1:
-                pass
+            #while (time.time() - turnStartTime) <= 0.1:
+            #    pass
             """
             Real-time constraints 
             """

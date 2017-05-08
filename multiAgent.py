@@ -11,6 +11,7 @@ from game import Directions
 from game import Actions
 from util import nearestPoint
 from util import manhattanDistance
+from mapAbstraction import *
 import util, layout
 from layout import Layout
 import sys, types, time, random, os
@@ -336,6 +337,10 @@ def readCommand(param):
             args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
         elif param[1] == "speedupcra":
             args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+        elif param[1] == "abstraction":
+            abstraction = Abstraction()
+            abstraction.getAbstractMap(args["layout"].obstacles)
+            args["pursuers"] = [pursuers.SpeedUpCRAPursuer(abstraction) for i in range(1, args["layout"].getNumPursuers() + 1)]
 
     # graphic display 
     args["display"] = graphics.MultiAgentGraphics()
