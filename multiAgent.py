@@ -338,9 +338,14 @@ def readCommand(param):
         elif param[1] == "speedupcra":
             args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
         elif param[1] == "abstraction":
+            # Map abstraction
             abstraction = Abstraction()
             abstraction.getAbstractMap(args["layout"].obstacles)
-            args["pursuers"] = [pursuers.SpeedUpCRAPursuer(abstraction) for i in range(1, args["layout"].getNumPursuers() + 1)]
+            abstraction2 = Abstraction()
+            abstraction2.levelUp(abstraction.nodes[0])
+
+            # Map abstraction
+            args["pursuers"] = [pursuers.SpeedUpCRAPursuer(abstraction2) for i in range(1, args["layout"].getNumPursuers() + 1)]
 
     # graphic display 
     args["display"] = graphics.MultiAgentGraphics()
@@ -360,9 +365,9 @@ def runGames():
     rules = ClassicGameRules()
     games = []
     args = readCommand(sys.argv[1:])
+    abstraction = Abstraction()
     for i in range(args["numGames"]):
-        args = readCommand(sys.argv[1:])
-        # print args["layout"].getNumPursuers() 
+        # args = readCommand(sys.argv[1:])
         game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
         game.run()
 

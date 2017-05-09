@@ -7,9 +7,9 @@ Map -> Node -> abstract
 """
 class Node(object):
     """A node is representative for a position"""
-    def __init__(self, level):
+    def __init__(self, level, val):
         self.position = None               # coordinate 
-        self.val = 0
+        self.val = val
         self.level = level      # abstraction level
         self.isAbstracted = False    # abtracted or not
         self.neighbors = []        # neighbor nodes
@@ -25,13 +25,21 @@ class Node(object):
         self.neighbor.append(node)
 
 class Abstraction(object):
-    """A class for map abstraction"""
+    """
+    A class for map abstraction
+    Function description: 
+    1. mapToGraph: obstacle 2-d array -> node array (no neighbor)
+    2. addNeighbors: node array (no neighbor) -> node array (with neighbors)
+    3. getAbstractArray: node array (with neighbors) -> abstracted node array (no neighbor)
+    4. getAbstractGraph: abstracted node array (no neighbor) -> abstracted node array (with neighbors)
+
+    """
     def __init__(self):
-        self.width = 0
-        self.height = 0
-        self.head = None
-        self.nodes = None
-        self.nodeArray = None
+        self.width = 0   
+        self.height = 0  
+        self.head = None      # Graph head pointer
+        self.nodes = None     # all nodes array, easy to find the node pointer
+        self.nodeArray = None # 2-d node array
 
     def mapToGraph(self, obstacles):
         """
@@ -40,23 +48,23 @@ class Abstraction(object):
         # obstacles to node array
         self.height = obstacles.height
         self.width = obstacles.width
+        print self.height, self.width
         graph = []
-        i = 1
-        first = True
-        for x in range(self.width):
+        first = True # Assign first node to self.head attribute
+        count = 1
+        for y in range(self.height):
             row = []
-            for y in range(self.height):
-                node = None
-                
+            for x in range(self.width):
+                node = None                
                 if not obstacles[x][y]:
                     # if (x, y) is not obstacle
-                    node = Node(1)
+                    node = Node(0, count)
                     node.position = (x, y)
-                    node.val = i
-                    i += 1 
                     if first: 
+                    	# Assign first node to self.head attribute
                     	self.head = node
                     	first = False
+                    count += 1
                 row.append(node)
             graph.append(row)
         self.nodeArray = graph
@@ -66,8 +74,8 @@ class Abstraction(object):
         """
         Assign neighbors to each node
         """
-        for x in range(self.width):
-            for y in range(self.height):
+        for y in range(self.width):
+            for x in range(self.height):
                 if self.nodeArray[x][y]:
                     currentNode = self.nodeArray[x][y]
                     # 4 direction
@@ -75,45 +83,78 @@ class Abstraction(object):
                     if x-1 >= 0:
                         if self.nodeArray[x-1][y]:
                             currentNode.neighbors.append(self.nodeArray[x-1][y])
-                    # up
-                    if y-1 >= 0:
-                        if self.nodeArray[x][y-1]:
-                            currentNode.neighbors.append(self.nodeArray[x][y-1])
-                    # right
-                    if x+1 < self.height:
-                        if self.nodeArray[x+1][y]:
-                            currentNode.neighbors.append(self.nodeArray[x+1][y])
                     # down
                     if y+1 < self.width:
                         if self.nodeArray[x][y+1]:
                             currentNode.neighbors.append(self.nodeArray[x][y+1])
-
-    def getAbstractArray(self, obstacles):
+                    # right
+                    if x+1 < self.height:
+                        if self.nodeArray[x+1][y]:
+                            currentNode.neighbors.append(self.nodeArray[x+1][y])
+                    # up
+                    if y-1 >= 0:
+                        if self.nodeArray[x][y-1]:
+                            currentNode.neighbors.append(self.nodeArray[x][y-1])
+                    
+                    
+        """
+        for x in self.nodeArray:
+        	temp = ""
+        	for y in x:
+        	    if y is None: 
+        	    	temp += " **" 
+        	    else: 
+        	    	# print y.val, "neighbors: ", [neighbor.val for neighbor in y.neighbors]
+        	    	temp += " %2.d" % (y.val)
+        	print temp
+        """
+        # print "head:", [ neighbor.val for neighbor in self.head.neighbors]
+    def getAbstractArray(self):
         """
         graph -> abstraction map
         """
+        print "get abstraction map"
         # map to graph with neighbors
-        self.mapToGraph(obstacles)
-        self.addNeighbors()
+        
         abstractNodeArray = []
-        print self.head
         # Abstract map
         queue = [self.head]
+        count = 1
         # First node neighbors
         while len(queue) != 0:
             # node 1
             node1 = queue.pop(0)
+            #print "queue: " ,[ neighbor.val for neighbor in queue]
+            #print "node:", node1.val
+            #print "neighbors:", [ neighbor.val for neighbor in node1.neighbors]
             node1.isAbstracted = True # mark
             # Add node1 neighbors to queue
             singleNode = True
+            # print "node1:", node1.val, [str(node.val) + str(node.isAbstracted) for node in node1.neighbors]
             for neighbor in node1.neighbors:
-                if neighbor not in queue and not neighbor.isAbstracted:
-                    queue.append(neighbor)
+                if neighbor.isAbstracted is False:
+                    # print "has unabstracted node"
+                    if neighbor not in queue:
+                    	queue.append(neighbor)
                     singleNode = False
+
+            # print "queue: ", [ str(neighbor.val) + str(neighbor.isAbstracted) for neighbor in queue]
             if singleNode:
-                abstractNode = Node(node1.level + 1)
+            	# print "single"
+                abstractNode = Node(node1.level + 1, count)
+                count += 1
                 abstractNode.children.append(node1)
-                abstractNode.positions.append(node1.position)
+                if node1.level > 0:
+	            	              	
+                	abstractNode.positions += node1.positions
+                else:
+                	abstractNode.positions.append(node1.position)
+
+                for neighbor in node1.neighbors:
+                	if neighbor not in [node1]:
+                		abstractNode.childrenNeighbors.append(neighbor)
+                abstractNodeArray.append(abstractNode)
+                # print [node.val for node in abstractNode.children]
                 break
             # Easy to pop
             def popNode(node, array):
@@ -129,26 +170,38 @@ class Abstraction(object):
                 if not node.isAbstracted:
                     node2 = node
                     node2.isAbstracted = True # mark
-                    popNode(node, queue)            
+                    popNode(node, queue) 
+                    break   
+            # print "node2: ", node2.val
+            # print "queue: ", [ neighbor.val for neighbor in queue]        
             # Add node1 neighbors to queue
             for neighbor in node2.neighbors:
                 if neighbor not in queue and not neighbor.isAbstracted:
                     queue.append(neighbor)
 
-            abstractNode = Node(node1.level + 1)
+            abstractNode = Node(node1.level + 1, count)
+            count += 1
             abstractNode.children.append(node1)
-            abstractNode.positions.append(node1.position)
             abstractNode.children.append(node2)
-            abstractNode.positions.append(node2.position)
+            if node1.level > 0:
+                abstractNode.positions += node1.positions
+            else:
+                abstractNode.positions.append(node1.position)
+            if node1.level > 0:
+                abstractNode.positions += node2.positions
+            else:
+               	abstractNode.positions.append(node2.position)
+
             for neighbor in (node1.neighbors + node2.neighbors):
                 if neighbor not in [node1, node2]:
                     abstractNode.childrenNeighbors.append(neighbor)
-            # Add to list 
+            # Add to lis
+            # print "abstract from graph" 
             abstractNodeArray.append(abstractNode)
-            # set position x and y
+            # print [node.val for node in abstractNode.children]
 
         self.nodes = abstractNodeArray
-
+        # print "abstractNodeArray first item:", abstractNodeArray[0]
 
     def getAbstractGraph(self):
         """
@@ -161,13 +214,29 @@ class Abstraction(object):
             for child in node.children:
                 for neighborNode in self.nodes:
                     if child in neighborNode.childrenNeighbors and neighborNode not in node.neighbors:
+                    	# print child.val, " -> ", neighborNode.val
                         node.neighbors.append(neighborNode)
+        # for node in self.nodes:
+        	# print , node.childrenNeighbors
+        #for node in self.nodes:
+	     #   print [child.val for child in node.children]
 
     def getAbstractMap(self, obstacles):
-        self.getAbstractArray(obstacles)
+    	self.mapToGraph(obstacles)
+        self.addNeighbors()
+        self.getAbstractArray()
         self.getAbstractGraph()
-        return self.head
+        self.abstractHead = self.nodes[0]
+        # return self.head
 
+    def levelUp(self, abstractHead):
+    	self.head = abstractHead
+    	# print "second level up"
+    	self.getAbstractArray()
+        self.getAbstractGraph()
+        self.abstractHead = self.nodes[0]
+        # print "level", abstractHead.level
+        # return self
 
     def getNode(self, position):
         for node in self.nodes:
