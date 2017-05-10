@@ -341,16 +341,18 @@ def readCommand(param):
             # Map abstraction
             abstraction = Abstraction()
             abstraction.getAbstractMap(args["layout"].obstacles)
-            abstraction2 = Abstraction()
-            abstraction2.levelUp(abstraction.nodes[0])
+            # abstraction2 = Abstraction()
+            # abstraction2.levelUp(abstraction.nodes[0])
 
             # Map abstraction
-            args["pursuers"] = [pursuers.SpeedUpCRAPursuer(abstraction2) for i in range(1, args["layout"].getNumPursuers() + 1)]
+            args["pursuers"] = [pursuers.AbstractCoverPursuer(abstraction) for i in range(1, args["layout"].getNumPursuers() + 1)]
 
     # graphic display 
     args["display"] = graphics.MultiAgentGraphics()
     
     return args
+def getRandomPositions(args, mapName):
+    args["layout"] = layout.getLayout(mapName + ".lay", args["numAgents"])
 
 def loadAgent():
     # auto-agent or keyboard-agent
@@ -365,24 +367,25 @@ def runGames():
     rules = ClassicGameRules()
     games = []
     args = readCommand(sys.argv[1:])
-    abstraction = Abstraction()
+    mapName = sys.argv[1]
+    print "map name", mapName
     for i in range(args["numGames"]):
+        getRandomPositions(args, mapName)
         # args = readCommand(sys.argv[1:])
+        
         game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
         game.run()
 
 
     return games
 
-if __name__ == '__name__':
+if __name__ == '__main__':
 
     #args = readCommand(sys.argv[1:])
     #run(**args)
 
-    runGames(readCommand())
+    runGames()
 
     pass
     
 # args = readCommand(sys.argv[1:])
-
-runGames()

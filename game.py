@@ -423,7 +423,7 @@ class Game:
                         #write log
                         break
                 # 10 for roundMap
-                if self.turn > 1000:
+                if self.turn > 500:
                     self.gameOver = True
                     # self.writeLog("NAN")
                     break

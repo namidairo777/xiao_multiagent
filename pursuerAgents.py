@@ -298,7 +298,7 @@ class SpeedUpCRAPursuer(Agent):
             startTime = time.time()
             res = self.calculateCover(agentIndex, tempGameState, layout)
             endTime = time.time()
-            writeStepTimeLog('speedupcra.csv', endTime - startTime)
+            # writeStepTimeLog('maze1_speedupcra.csv', endTime - startTime)
             values.append(res)
         # print max(values)
         if max(values) == min(values):
@@ -314,8 +314,11 @@ class AbstractCoverPursuer(Agent):
     """
     def __init__(self, abstractionMap):
         self.abstraction = abstractionMap
+        self.useAstar = False
 
     def getAction(self, state, agentIndex):
+        # if self.useAstar:
+        #     return AstarPursuer().getAction(state, agentIndex)
         return self.calculateSuccessorSet(agentIndex, state, state.data.layout)
 
     def calculateCover(self, agentIndex, state, layout):
@@ -331,35 +334,26 @@ class AbstractCoverPursuer(Agent):
         targetNode = self.abstraction.getNode(state.data.agentStates[0].getPosition())
         targetQueue.append({"node": targetNode, "time": time})
         # x, y = state.data.agentStates[0].getPosition()
+        
         targetNode.markAs = "target-set"
         targetSet += len(targetNode.children)
-        #print targetQueue
+
         for i in range(1, layout.getNumPursuers() + 1):
             pursuerNode = self.abstraction.getNode(state.data.agentStates[i].getPosition())
             pursuerQueue.append({"node": pursuerNode, "time": time})
             pursuerNode.markAs = "pursuer-set"
-        #print targetQueue
-        while len(targetQueue) != 0 :
 
-            #print "len of target:", len(targetQueue), "len of pursuer", len(pursuerQueue)
-            # current target
-            #print len(targetQueue)
+        while len(targetQueue) != 0 :
             while len(targetQueue) > 0 and targetQueue[0]["time"] == time:
                 temp = targetQueue.pop(0)
                 tempNode = temp["node"]
                 tempTime = temp["time"]
-                #print "time", tempTime 
-                #print targetQueue
-                # neighbors = Actions.getPossibleNeighborActions((target_x, target_y), 1.0, layout.obstacles)
-                #print neighbors
                 for neighbor in tempNode.neighbors:
                     if neighbor.markAs not in ["target-set", "pursuer-set"]:
                         targetQueue.append({"node": neighbor, "time": time + 1}) 
                         neighbor.markAs = "target-set"
                         targetSet += 1
-            # current pursuer
-            #print "targetset", targetSet
-            #print len(pursuerQueue)
+                
             while len(pursuerQueue) > 0 and pursuerQueue[0]["time"] == time:
                 tempNode = pursuerQueue.pop(0)["node"]
                 for neighbor in tempNode.neighbors:
@@ -375,6 +369,7 @@ class AbstractCoverPursuer(Agent):
     def calculateSuccessorSet(self, agentIndex, state, layout):
         minValue = 0
         values = []
+        # print "abstraction calculate successor set"
         successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
         # print "successors", successors
         # print len(successors)
@@ -387,11 +382,13 @@ class AbstractCoverPursuer(Agent):
             startTime = time.time()
             res = self.calculateCover(agentIndex, tempGameState, layout)
             endTime = time.time()
-            # writeStepTimeLog('speedupcra.csv', endTime - startTime)
+            # writeStepTimeLog('maze1_abstraction.csv', endTime - startTime)
             values.append(res)
         # print max(values)
         if max(values) == min(values):
+            self.useAstar = True
             #print "Go astar", state.data.agentStates[2].getPosition()
+            # print "agent ", agentIndex, "A star"
             return AstarPursuer().getAction(state, agentIndex)
         else:
             #print "surrounding"
@@ -426,6 +423,6 @@ def scoreEvaluationFunction(state):
 
 def writeStepTimeLog(title, log):
     import csv
-    #with open('logs/step_time_vacancy_' + title, 'a') as csvfile:
-    #    spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-    #    spamwriter.writerow([log])
+    with open('logs/' + title, 'a') as csvfile:
+        spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        spamwriter.writerow([log])
