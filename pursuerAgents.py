@@ -16,6 +16,7 @@ from game import Directions
 import random
 from util import manhattanDistance
 import util
+from mapRefinement import Refinement
 
 class PursuerAgent( Agent ):
     def __init__( self, index ):
@@ -53,11 +54,18 @@ class AstarPursuer(Agent):
     closeList: already been calculated
     """
     def getAction(self, state, agentIndex):
+        
+        return self.aStar(state.data.layout.obstacles, state.data.agentStates[agentIndex].getPosition(), state.data.agentStates[0].getPosition(), False, None)
 
-        return self.aStar(state.data.layout.obstacles, state.data.agentStates[agentIndex].getPosition(), state.data.agentStates[0].getPosition())
+    def getAbstractionAction(self, abstractions, start, goal):
+        return Refinement.refine(abstractions, start, goal)
 
-    def aStar(self, obstacles, startPos, goalPos):
+
+
+    def aStar(self, obstacles, startPos, goalPos, abstracted=False, abstractionMap=None):
         # dist{"position": (1, 2), "g": 1, "h": 2, "f": 3}
+        if startPos == goalPos:
+            return startPos
         openList = []
         closedList = []
 
@@ -79,20 +87,30 @@ class AstarPursuer(Agent):
                 while temp.parent != None:
                     result.append(temp)
                     temp = temp.parent
-                return result[len(result) - 1].position
+                return result[-1].position
 
             for i in range(len(openList)):
                 if openList[i].position == currentPoint.position:
                     openList = openList[:i] + openList[i + 1:]
                     break
             closedList.append(currentPoint)
-            neighbors = Actions.getPossibleNeighborActions(currentPoint.position, 1.0, obstacles)
+            if abstracted:
+                neighbors = Actions.getPossibleAbstractedNeighbors(currentPoint.position, abstractionMap)
+                # print "abstract neighbors", neighbors
+            else:
+                
+                neighbors = Actions.getPossibleNeighborActions(currentPoint.position, 1.0, obstacles)
+                # print "neighbors", neighbors
 
             for i in range(len(neighbors)):
-                neighbor = Position(neighbors[i], 0, 0, 0)
+                neighbor =  Position(neighbors[i], 0, 0, 0)
                 if self.find_point(closedList, neighbor):
                     continue
+
                 gScore = currentPoint.g + 1
+                if abstracted:
+                    gScore = currentPoint.g + manhattanDistance(currentPoint.position, neighbor.position) 
+
                 gScoreIsBest = False
 
                 if not self.find_point(openList, neighbor):
@@ -106,7 +124,7 @@ class AstarPursuer(Agent):
                     neighbor.g = gScore
                     neighbor.f = neighbor.g + neighbor.h
 
-
+    
 
     def find_point(self, dataList, point):
         for i in range(len(dataList)):
@@ -312,8 +330,8 @@ class AbstractCoverPursuer(Agent):
     """
     Abstract to a higher level
     """
-    def __init__(self, abstractionMap):
-        self.abstraction = abstractionMap
+    def __init__(self, abstractions):
+        self.abstractions = abstractions
         self.useAstar = False
 
     def getAction(self, state, agentIndex):
@@ -331,7 +349,7 @@ class AbstractCoverPursuer(Agent):
         time = 0
         locations = layout.deepCopy()
         # print type(agentIndex) #state.data.agentStates[agentIndex].getPosition()
-        targetNode = self.abstraction.getNode(state.data.agentStates[0].getPosition())
+        targetNode = self.abstractions[-1].getNode(state.data.agentStates[0].getPosition())
         targetQueue.append({"node": targetNode, "time": time})
         # x, y = state.data.agentStates[0].getPosition()
         
@@ -339,7 +357,7 @@ class AbstractCoverPursuer(Agent):
         targetSet += len(targetNode.children)
 
         for i in range(1, layout.getNumPursuers() + 1):
-            pursuerNode = self.abstraction.getNode(state.data.agentStates[i].getPosition())
+            pursuerNode = self.abstractions[-1].getNode(state.data.agentStates[i].getPosition())
             pursuerQueue.append({"node": pursuerNode, "time": time})
             pursuerNode.markAs = "pursuer-set"
 
@@ -363,7 +381,7 @@ class AbstractCoverPursuer(Agent):
             time += 1
             #print targetQueue
         #print "overCalculate targetset"
-        self.abstraction.clearMark()
+        self.abstractions[-1].clearMark()
         return targetSet
 
     def calculateSuccessorSet(self, agentIndex, state, layout):
@@ -386,10 +404,12 @@ class AbstractCoverPursuer(Agent):
             values.append(res)
         # print max(values)
         if max(values) == min(values):
-            self.useAstar = True
-            #print "Go astar", state.data.agentStates[2].getPosition()
-            # print "agent ", agentIndex, "A star"
-            return AstarPursuer().getAction(state, agentIndex)
+           
+            a = AstarPursuer()
+            # return a.getAction(state, agentIndex)
+            goal = a.getAbstractionAction(self.abstractions, state.data.agentStates[agentIndex].getPosition(), state.data.agentStates[0].getPosition())
+            print "after abstraction, next move:", goal
+            return a.aStar(state.data.layout.obstacles, state.data.agentStates[agentIndex].getPosition(), goal)
         else:
             #print "surrounding"
             return successors[values.index(min(values))]

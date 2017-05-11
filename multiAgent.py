@@ -277,17 +277,10 @@ class PursuerRules:
     getLegalActions = staticmethod(getLegalActions)
 
     def applyAction(state, action, pursuerIndex):
-        #legal = PursuerRules.getLegalActions(state, pursuerIndex)
-        
-        #if action not in legal:
-        #    raise Exception("Illegal pursuer action" + str(action))
 
         pursuerState = state.data.agentStates[pursuerIndex]
-        # speed = PursuerRules.PURSUER_SPEED
-        #vector = Actions.directionToVector(action, speed)
         pursuerState.configuration = pursuerState.configuration.generateSuccessor(action)
         
-
     applyAction = staticmethod(applyAction)
 
     
@@ -339,13 +332,13 @@ def readCommand(param):
             args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
         elif param[1] == "abstraction":
             # Map abstraction
-            abstraction = Abstraction()
+            abstraction = Abstraction(1)
             abstraction.getAbstractMap(args["layout"].obstacles)
-            # abstraction2 = Abstraction()
-            # abstraction2.levelUp(abstraction.nodes[0])
-
+            abstraction2 = Abstraction(2)
+            abstraction2.levelUp(abstraction.nodes[0])
+            abstractions = [abstraction, abstraction2]
             # Map abstraction
-            args["pursuers"] = [pursuers.AbstractCoverPursuer(abstraction) for i in range(1, args["layout"].getNumPursuers() + 1)]
+            args["pursuers"] = [pursuers.AbstractCoverPursuer(abstractions) for i in range(1, args["layout"].getNumPursuers() + 1)]
 
     # graphic display 
     args["display"] = graphics.MultiAgentGraphics()

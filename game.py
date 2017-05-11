@@ -236,6 +236,7 @@ class Actions:
     def getPossibleActions(config, speed, obstacles):
         possible = []
         x, y = config
+
         if not obstacles[int(x + speed)][y]:
             possible.append((int(x + speed), y))
         if not obstacles[int(x - speed)][y]:
@@ -265,7 +266,14 @@ class Actions:
 
     getPossibleNeighborActions = staticmethod(getPossibleNeighborActions)
 
+    def getPossibleAbstractedNeighbors(position, abstractionMap):
+        node = abstractionMap.getNode(position)
+        result = []
+        for neighbor in node.neighbors:
+            result.append(neighbor.position)
+        return result
 
+    getPossibleAbstractedNeighbors = staticmethod(getPossibleAbstractedNeighbors)
 
     def getLegalNeighbors(position, walls):
         x, y = position
@@ -419,7 +427,7 @@ class Game:
                         self.gameOver = True
                         
                         #write game time
-                        self.writeLog(self.turn)
+                        # self.writeLog(self.turn)
                         #write log
                         break
                 # 10 for roundMap

@@ -13,8 +13,10 @@ class Node(object):
         self.level = level      # abstraction level
         self.isAbstracted = False    # abtracted or not
         self.neighbors = []        # neighbor nodes
-        self.children = []        # child nodes (abtraction level - 1)
-        self.positions = []
+        self.children = []
+        if level == 0:
+            self.children.append(self) # child nodes (abtraction level - 1)
+        self.positions = []   #  positions (level == 0)
         self.childrenNeighbors = [] # child's neighbors (abtraction level - 1), convinient for connnect graph
         self.markAs = None      # mark as none, target-set, pursuer-set
 
@@ -23,6 +25,12 @@ class Node(object):
         Append neighbor to current node's neighbors list
         """
         self.neighbor.append(node)
+
+    def getRandomChildPosition(self):
+        start = 0
+        end = len(self.positions) - 1
+        import random
+        return self.positions[random.randint(start, end)]
 
 class Abstraction(object):
     """
@@ -34,12 +42,13 @@ class Abstraction(object):
     4. getAbstractGraph: abstracted node array (no neighbor) -> abstracted node array (with neighbors)
 
     """
-    def __init__(self):
+    def __init__(self, level):
         self.width = 0   
         self.height = 0  
         self.head = None      # Graph head pointer
         self.nodes = None     # all nodes array, easy to find the node pointer
         self.nodeArray = None # 2-d node array
+        self.level = level
 
     def mapToGraph(self, obstacles):
         """
@@ -183,8 +192,14 @@ class Abstraction(object):
             for neighbor in (node1.neighbors + node2.neighbors):
                 if neighbor not in [node1, node2]:
                     abstractNode.childrenNeighbors.append(neighbor)
-            # Add to lis
-            # print "abstract from graph" 
+            # Average position
+            x = 0
+            y = 0
+            for position in abstractNode.positions:
+                tempX, tempY = position
+                x += tempX
+                y += tempY
+            abstractNode.position = (x/len(abstractNode.positions), y/len(abstractNode.positions))
             abstractNodeArray.append(abstractNode)
             # print [node.val for node in abstractNode.children]
         # print "count", count
@@ -204,10 +219,6 @@ class Abstraction(object):
                     if child in neighborNode.childrenNeighbors and neighborNode not in node.neighbors:
                     	# print child.val, " -> ", neighborNode.val
                         node.neighbors.append(neighborNode)
-        # for node in self.nodes:
-        	# print , node.childrenNeighbors
-        #for node in self.nodes:
-	     #   print [child.val for child in node.children]
 
     def getAbstractMap(self, obstacles):
     	self.mapToGraph(obstacles)
@@ -233,6 +244,12 @@ class Abstraction(object):
             if position in node.positions:
                 # print "found node"
             	return node
+    def getNodeByPosition(self, position):
+        for node in self.nodes:
+            if position == node.position:
+               return node
+
+
 
     def clearMark(self):
         for node in self.nodes:
