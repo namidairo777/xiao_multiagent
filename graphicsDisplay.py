@@ -202,7 +202,7 @@ class MultiAgentGraphics:
 
     def moveAgent(self, newState, prevState, image):
         newPosition = newState.getPosition()
-        print "new position", newPosition
+        # print "new position", newPosition
         screenPosition = self.to_screen(newPosition)
         moveAgent(image, screenPosition)
 

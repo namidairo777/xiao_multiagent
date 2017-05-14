@@ -26,6 +26,7 @@ class Refinement:
 			goalNode = currentMap.getNode(goalPosition)
 			goalPosition = goalNode.position
 			a = pursuers.AstarPursuer()
+			print "startPosition, goalPosition", startPosition, "->", goalPosition
 			next = a.aStar(None, startPosition, goalPosition, True, abstractionMap=currentMap)
 			goalNode = currentMap.getNode(next)
 			goalPosition = goalNode.getRandomChildPosition()

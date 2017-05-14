@@ -129,7 +129,9 @@ class AgentState:
 
     def copy(self):
         state = AgentState(self.start, self.isTarget)
-        state.configuration = self.configuration
+        x, y = self.configuration.getPosition()
+        #state.configuration = self.configuration
+        state.configuration = Configuration((x, y))
         state.numCarrying = self.numCarrying
         state.numReturned = self.numReturned
         return state
@@ -319,6 +321,12 @@ class GameStateData:
         self._win = False
         self.scoreChange = 0
 
+    def __str__(self):
+        position = ""
+        for i in self.agentStates:
+            position += str(i.getPosition())
+        return position
+
     def deepCopy(self):
         state = GameStateData(self)
         state.layout = self.layout.deepCopy()
@@ -331,6 +339,7 @@ class GameStateData:
             copiedStates.append(agentState.copy())
         return copiedStates
 
+    
     # def __eq__
     # def __hash__
     # def __str__
@@ -407,20 +416,29 @@ class Game:
             observation = self.state.deepCopy()
             ##agentMovement = []
             turnStartTime = time.time()
+            #positions = []
+            actions = []
             for agentIndex in range(len(self.agents)):
                 # time for step move
+                
                 stepStartTime = time.time()
                 agent = self.agents[agentIndex]
-                action = agent.getAction(observation, agentIndex)
+                action = agent.getAction(self.state, agentIndex)
+                #positions.append(observation.data.agentStates[agentIndex].getPosition())
                 # print "agent", agentIndex, action
                 self.moveHistory.append((agentIndex, action))
-                
+                actions.append(action)
+
+            for agentIndex in range(len(self.agents)):
+                action = actions[agentIndex]
                 #update GameState
+                #positions.append(self.state.data.agentStates[agentIndex].getPosition())
                 self.state = self.state.generateSuccessor(action, agentIndex)
-                print self.state.getPursuerPosition(1)
+                # print self.state.getPursuerPosition(1)
                 #stepEndTime = time.time()
                 #self.writeStepTimeLog(stepEndTime - stepStartTime)
                 self.display.update(self.state.data, agentIndex, self.turn)
+                #positions.append(self.state.data.agentStates[agentIndex].getPosition())
                 if agentIndex != 0: 
                     if self.rules.collide(self.state, agentIndex):
                         endTime = time.time()
@@ -437,11 +455,12 @@ class Game:
                     self.gameOver = True
                     # self.writeLog("NAN")
                     break
-
-            
+            print self.state.data
+            #print "positions:", positions
+            #positions = []
             self.turn += 1
             
-            while (time.time() - turnStartTime) <= 0.5:
+            while (time.time() - turnStartTime) <= 0.1:
                 pass
             """
             Real-time constraints 
