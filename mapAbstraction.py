@@ -153,6 +153,13 @@ class Abstraction(object):
                 for neighbor in node1.neighbors:
                 	if neighbor not in [node1]:
                 		abstractNode.childrenNeighbors.append(neighbor)
+                x = 0
+                y = 0
+                for position in abstractNode.positions:
+                    tempX, tempY = position
+                    x += tempX
+                    y += tempY
+                abstractNode.position = (x/len(abstractNode.positions), y/len(abstractNode.positions))
                 abstractNodeArray.append(abstractNode)
                 continue
             # Easy to pop
@@ -219,6 +226,8 @@ class Abstraction(object):
                     if child in neighborNode.childrenNeighbors and neighborNode not in node.neighbors:
                     	# print child.val, " -> ", neighborNode.val
                         node.neighbors.append(neighborNode)
+            if None in node.neighbors: 
+                print "this abstract node has None neighbor "
 
     def getAbstractMap(self, obstacles):
     	self.mapToGraph(obstacles)

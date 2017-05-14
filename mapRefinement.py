@@ -15,6 +15,7 @@ class Refinement:
 
 		return next position
 		"""
+		#print "before refinement: ", start, goal
 		level = len(abstractions)
 		startPosition = None
 		goalPosition = goal
@@ -28,9 +29,8 @@ class Refinement:
 			next = a.aStar(None, startPosition, goalPosition, True, abstractionMap=currentMap)
 			goalNode = currentMap.getNode(next)
 			goalPosition = goalNode.getRandomChildPosition()
-			print "level", level
-			print "goalPosition", goalPosition
 			level -= 1
+		#print "after refinement: ", goalPosition
 		return goalPosition
 
 	refine = staticmethod(refine)

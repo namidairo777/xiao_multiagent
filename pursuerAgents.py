@@ -109,6 +109,7 @@ class AstarPursuer(Agent):
 
                 gScore = currentPoint.g + 1
                 if abstracted:
+                    # print "current and neighbor:", currentPoint.position, neighbor.position
                     gScore = currentPoint.g + manhattanDistance(currentPoint.position, neighbor.position) 
 
                 gScoreIsBest = False
@@ -357,7 +358,11 @@ class AbstractCoverPursuer(Agent):
         targetSet += len(targetNode.children)
 
         for i in range(1, layout.getNumPursuers() + 1):
-            pursuerNode = self.abstractions[-1].getNode(state.data.agentStates[i].getPosition())
+            pursuerNode = None
+            if i == agentIndex:
+                pursuerNode = self.abstractions[-1].getNodeByPosition(state.data.agentStates[i].getPosition())
+            else:
+                pursuerNode = self.abstractions[-1].getNode(state.data.agentStates[i].getPosition())
             pursuerQueue.append({"node": pursuerNode, "time": time})
             pursuerNode.markAs = "pursuer-set"
 
@@ -388,7 +393,9 @@ class AbstractCoverPursuer(Agent):
         minValue = 0
         values = []
         # print "abstraction calculate successor set"
-        successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        # successors = Actions.getPossibleActions(state.data.agentStates[agentIndex].getPosition(), 1.0, layout.obstacles)
+        successors = Actions.getPossibleAbstractedNeighbors(state.data.agentStates[agentIndex].getPosition(), self.abstractions[-1])
+        # get abstraction possible successors  
         # print "successors", successors
         # print len(successors)
 
@@ -402,17 +409,29 @@ class AbstractCoverPursuer(Agent):
             endTime = time.time()
             # writeStepTimeLog('maze1_abstraction.csv', endTime - startTime)
             values.append(res)
-        # print max(values)
+        # print values
         if max(values) == min(values):
            
             a = AstarPursuer()
             # return a.getAction(state, agentIndex)
+            # print "aster agent: ", agentIndex
             goal = a.getAbstractionAction(self.abstractions, state.data.agentStates[agentIndex].getPosition(), state.data.agentStates[0].getPosition())
-            print "after abstraction, next move:", goal
-            return a.aStar(state.data.layout.obstacles, state.data.agentStates[agentIndex].getPosition(), goal)
+            result = a.aStar(state.data.layout.obstacles, state.data.agentStates[agentIndex].getPosition(), goal)
+            # print "astar after refinement:", result
+            print "A star - agent:", agentIndex
+            print state.data.agentStates[agentIndex].getPosition(), " -> ", result
+            return result
         else:
-            #print "surrounding"
-            return successors[values.index(min(values))]
+            # print "cover agent: ", agentIndex
+            # print "surrounding"
+            a = AstarPursuer()
+            nextAbstractionPosition = successors[values.index(min(values))]
+            nextNode = self.abstractions[-1].getNodeByPosition(nextAbstractionPosition)
+            nextPosition = nextNode.getRandomChildPosition()
+            result = a.aStar(state.data.layout.obstacles, state.data.agentStates[agentIndex].getPosition(), nextPosition)
+            print "Cover - agent:", agentIndex
+            print state.data.agentStates[agentIndex].getPosition(), " -> ", result
+            return result
 
 
 class MTSPursuer(Agent):

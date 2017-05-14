@@ -412,10 +412,12 @@ class Game:
                 stepStartTime = time.time()
                 agent = self.agents[agentIndex]
                 action = agent.getAction(observation, agentIndex)
+                # print "agent", agentIndex, action
                 self.moveHistory.append((agentIndex, action))
                 
                 #update GameState
                 self.state = self.state.generateSuccessor(action, agentIndex)
+                print self.state.getPursuerPosition(1)
                 #stepEndTime = time.time()
                 #self.writeStepTimeLog(stepEndTime - stepStartTime)
                 self.display.update(self.state.data, agentIndex, self.turn)
@@ -439,8 +441,8 @@ class Game:
             
             self.turn += 1
             
-            #while (time.time() - turnStartTime) <= 0.1:
-            #    pass
+            while (time.time() - turnStartTime) <= 0.5:
+                pass
             """
             Real-time constraints 
             """
