@@ -245,12 +245,13 @@ class Abstraction(object):
         #     print i.positions
         # print "level", abstractHead.level
         # return self
-
+    # get node by its child position
     def getNode(self, position):
         for node in self.nodes:
             if position in node.positions:
                 # print "found node"
             	return node
+    # get node by its position
     def getNodeByPosition(self, position):
         for node in self.nodes:
             if position == node.position:

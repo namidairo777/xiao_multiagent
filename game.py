@@ -269,13 +269,26 @@ class Actions:
     getPossibleNeighborActions = staticmethod(getPossibleNeighborActions)
 
     def getPossibleAbstractedNeighbors(position, abstractionMap):
+        node = abstractionMap.getNodeByPosition(position)
+        if node is None:
+            print position, "has no abstracted neighbors"
+        result = []
+        for neighbor in node.neighbors:
+            result.append(neighbor.position)
+
+        return result
+
+    getPossibleAbstractedNeighbors = staticmethod(getPossibleAbstractedNeighbors)
+
+    def getPossibleAbstractedNeighborsByChildPosition(position, abstractionMap):
         node = abstractionMap.getNode(position)
         result = []
         for neighbor in node.neighbors:
             result.append(neighbor.position)
+
         return result
 
-    getPossibleAbstractedNeighbors = staticmethod(getPossibleAbstractedNeighbors)
+    getPossibleAbstractedNeighborsByChildPosition = staticmethod(getPossibleAbstractedNeighborsByChildPosition)
 
     def getLegalNeighbors(position, walls):
         x, y = position
@@ -410,7 +423,6 @@ class Game:
         
         # Rules are different from pacman project
         # turnCount = 0
-
         while not self.gameOver:
             # make the plan for moving
             observation = self.state.deepCopy()
@@ -451,17 +463,17 @@ class Game:
                         #write log
                         break
                 # 10 for roundMap
-                if self.turn > 500:
+                if self.turn > 100:
                     self.gameOver = True
                     # self.writeLog("NAN")
                     break
-            print self.state.data
+            # print self.state.data
             #print "positions:", positions
             #positions = []
             self.turn += 1
             
-            while (time.time() - turnStartTime) <= 0.1:
-                pass
+            #while (time.time() - turnStartTime) <= 0.5:
+             #   pass
             """
             Real-time constraints 
             """
