@@ -336,12 +336,12 @@ def readCommand(param):
             abstraction.getAbstractMap(args["layout"].obstacles)
             abstraction2 = Abstraction(2)
             abstraction2.levelUp(abstraction.nodes[0])
-            #abstraction3 = Abstraction(3)
-            #abstraction3.levelUp(abstraction2.nodes[0])
+            abstraction3 = Abstraction(3)
+            abstraction3.levelUp(abstraction2.nodes[0])
             abstractions = []
             abstractions.append(abstraction)
             abstractions.append(abstraction2)
-            #abstractions.append(abstraction3)
+            abstractions.append(abstraction3)
             # Map abstraction
             args["pursuers"] = [pursuers.AbstractCoverPursuer(abstractions) for i in range(1, args["layout"].getNumPursuers() + 1)]
 
