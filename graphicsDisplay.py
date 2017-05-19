@@ -11,7 +11,7 @@ from game import Directions
 #   graphics display code
 ###########################
 
-DEFAULT_GRID_SIZE = 12.0
+DEFAULT_GRID_SIZE = 10.0
 INFO_PANE_HEIGHT = 35
 BACKGROUND_COLOR = formatColor(1.0, 1.0, 1.0)
 OBSTACLE_COLOR = formatColor(0.0, 0.0, 0.0)

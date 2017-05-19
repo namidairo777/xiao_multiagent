@@ -19,8 +19,9 @@ class Agent:
     An agent must define a getAction method
 
     """
-    def __init__(self, index=0):
+    def __init__(self, prefix=None, index=0):
         self.index = index
+        self.prefix = prefix
 
     def getAction(self, state):
         return 0
@@ -400,7 +401,7 @@ class Game:
 
     
 
-    def run(self):
+    def run(self, prefix=None):
         """
         Main control loop for game play
 
@@ -455,17 +456,19 @@ class Game:
                     if self.rules.collide(self.state, agentIndex):
                         endTime = time.time()
                         cost = endTime - startTime
-                        print "time cost: ", cost
+                        #print "time cost: ", cost
                         self.gameOver = True
                         
                         #write game time
-                        # self.writeLog(self.turn)
+                        if prefix:
+                            self.writeLog(prefix+'.csv', cost)
                         #write log
                         break
                 # 10 for roundMap
-                if self.turn > 100:
+                if self.turn > 200:
                     self.gameOver = True
-                    # self.writeLog("NAN")
+                    if prefix:
+                        self.writeLog(prefix+'.csv', "NAN")
                     break
             # print self.state.data
             #print "positions:", positions
@@ -500,14 +503,14 @@ class Game:
                     return
         self.display.finish()
     
-    def writeLog(self, log):
+    def writeLog(self, title, log):
         import csv
-        with open('logs/turn_count_maze1_astar_3pursuer.csv', 'a') as csvfile:
+        with open('logs/'+title, 'a') as csvfile:
             spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             spamwriter.writerow([log])
-    def writeStepTimeLog(self, log):
+    def writeStepTimeLog(self, title, log):
         import csv
-        with open('logs/step_time_speedupcra.csv', 'a') as csvfile:
+        with open('logs/'+title, 'a') as csvfile:
             spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             spamwriter.writerow([log])
 

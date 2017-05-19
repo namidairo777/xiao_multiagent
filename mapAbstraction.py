@@ -120,7 +120,7 @@ class Abstraction(object):
         """
         graph -> abstraction map
         """
-        print "get abstraction map"
+        #print "get abstraction map"
         # map to graph with neighbors
         
         abstractNodeArray = []
@@ -211,7 +211,7 @@ class Abstraction(object):
             # print [node.val for node in abstractNode.children]
         # print "count", count
         self.nodes = abstractNodeArray
-        print "level ndoes: ", len(self.nodes)
+        # print "level ndoes: ", len(self.nodes)
 
     def getAbstractGraph(self):
         """

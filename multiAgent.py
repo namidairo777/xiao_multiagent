@@ -293,7 +293,7 @@ class PursuerRules:
 # Framework to start this world
 ##############################
 
-def readCommand(param):
+def readCommand(param, prefix=None, level=None):
     """
     Python CLI command line interface
     param [map layout, pursuer, agent numbers, game numbers]
@@ -322,29 +322,31 @@ def readCommand(param):
     args["target"] = targets.SimpleFleeTarget()
     # pursuer algorithm: param[1]
     # default pursuer algorithm
-    args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+    # args["pursuers"] = [pursuers.SpeedUpCRAPursuer(prefix) for i in range(1, args["layout"].getNumPursuers() + 1)]
+    args["pursuers"] = None
     if len(param) > 1:
         if param[1] == "astar":
             args["pursuers"] = [pursuers.AstarPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
         elif param[1] == "cra":
             args["pursuers"] = [pursuers.CRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
         elif param[1] == "speedupcra":
-            args["pursuers"] = [pursuers.SpeedUpCRAPursuer() for i in range(1, args["layout"].getNumPursuers() + 1)]
+            args["pursuers"] = [pursuers.SpeedUpCRAPursuer(prefix) for i in range(1, args["layout"].getNumPursuers() + 1)]
         elif param[1] == "abstraction":
             # Map abstraction
             abstraction = Abstraction(1)
             abstraction.getAbstractMap(args["layout"].obstacles)
-            abstraction2 = Abstraction(2)
-            abstraction2.levelUp(abstraction.nodes[0])
-            abstraction3 = Abstraction(3)
-            abstraction3.levelUp(abstraction2.nodes[0])
             abstractions = []
             abstractions.append(abstraction)
-            abstractions.append(abstraction2)
-            abstractions.append(abstraction3)
-            # Map abstraction
-            args["pursuers"] = [pursuers.AbstractCoverPursuer(abstractions) for i in range(1, args["layout"].getNumPursuers() + 1)]
-
+                
+            if level > 1:
+                abstraction2 = Abstraction(2)
+                abstraction2.levelUp(abstraction.nodes[0])
+                abstractions.append(abstraction2)
+            if level > 2:
+                abstraction3 = Abstraction(3)
+                abstraction3.levelUp(abstraction2.nodes[0])
+                abstractions.append(abstraction3)
+            args["pursuers"] = [pursuers.AbstractCoverPursuer(abstractions, prefix) for i in range(1, args["layout"].getNumPursuers() + 1)]
     # graphic display 
     args["display"] = graphics.MultiAgentGraphics()
     
@@ -364,7 +366,7 @@ def runGames():
     
     rules = ClassicGameRules()
     games = []
-    args = readCommand(sys.argv[1:])
+    args = readCommand(sys.argv[1:], prefix="test")
     mapName = sys.argv[1]
     print "map name", mapName
     for i in range(args["numGames"]):
@@ -377,13 +379,80 @@ def runGames():
 
     return games
 
+
+    
+# args = readCommand(sys.argv[1:])
+"""
+Evaluation Experiment
+"""
+def experiment():
+    maps = ["mts" + str(i) for i in range(10)]
+    level = [1,2,3]
+    algorithms = ["speedupcra", "abstraction"]
+    # 1. Computational time cost
+    
+    start = time.time()
+    print "Experiment1 - Computational time cost"
+    for algorithm in algorithms:
+        print algorithm
+        for m in maps:
+            print "---"+m
+            # mapName algorithm numAgents numGames
+            if algorithm == "abstraction":
+                for lvl in level:
+                    print "------level"+str(lvl)
+                    mapName = "expMaps/" + m
+                    params = [mapName, algorithm, 3, 10]
+                    prefix = "test1_" + m + "_" + algorithm + "_level" + str(lvl)
+                    rules = ClassicGameRules()
+                    games = []
+                    args = readCommand(params, prefix, lvl)
+                    for i in range(args["numGames"]):
+                        getRandomPositions(args, mapName)        
+                        game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
+                        game.run()
+            else:
+                mapName = "expMaps/" + m
+                params = [mapName, algorithm, 3, 10]
+                prefix = "test1_" + m + "_" + algorithm
+                rules = ClassicGameRules()
+                games = []
+                args = readCommand(params, prefix)
+                for i in range(args["numGames"]):
+                    getRandomPositions(args, mapName)        
+                    game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
+                    game.run()
+
+    print "Experiment1 cost time: %f" % (time.time()-start)
+    
+
+    start = time.time()
+    # 2. Search time cost
+    print "Experiment1 - Search time cost"
+    for algorithm in algorithms:
+        print algorithm
+        for m in maps:
+            print "---"+m
+            # mapName algorithm numAgents numGames
+            mapName = "expMaps/" + m
+            params = [mapName, algorithm, 3, 100]
+            rules = ClassicGameRules()
+            games = []
+            args = readCommand(params, None, 2)
+            for i in range(args["numGames"]):
+                getRandomPositions(args, mapName)        
+                game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
+                prefix = "test2_" + m + "_" + algorithm
+                game.run(prefix=prefix)
+    print "Experiment2 cost time: %f" % (time.time()-start)
+
 if __name__ == '__main__':
 
     #args = readCommand(sys.argv[1:])
     #run(**args)
 
-    runGames()
+    experiment()
 
     pass
-    
-# args = readCommand(sys.argv[1:])
+
+

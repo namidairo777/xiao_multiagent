@@ -240,6 +240,8 @@ class SpeedUpCRAPursuer(Agent):
     Cmax
     Cpra*    
     """
+    def __init__(self, prefix):
+        self.prefix = prefix
 
 
     def getAction(self, state, agentIndex):
@@ -317,7 +319,8 @@ class SpeedUpCRAPursuer(Agent):
             startTime = time.time()
             res = self.calculateCover(agentIndex, tempGameState, layout)
             endTime = time.time()
-            # writeStepTimeLog('maze1_speedupcra.csv', endTime - startTime)
+            if self.prefix:
+                writeStepTimeLog(self.prefix+'.csv', endTime - startTime)
             values.append(res)
         # print max(values)
         if max(values) == min(values):
@@ -331,8 +334,9 @@ class AbstractCoverPursuer(Agent):
     """
     Abstract to a higher level
     """
-    def __init__(self, abstractions):
+    def __init__(self, abstractions, prefix):
         self.abstractions = abstractions
+        self.prefix = prefix
 
     def getAction(self, state, agentIndex):
         # if self.useAstar:
@@ -416,7 +420,8 @@ class AbstractCoverPursuer(Agent):
             startTime = time.time()
             res = self.calculateCover(agentIndex, tempGameState, layout)
             endTime = time.time()
-            # writeStepTimeLog('maze1_abstraction.csv', endTime - startTime)
+            if self.prefix:
+                writeStepTimeLog( self.prefix +'.csv', endTime - startTime)
             values.append(res)
 
         # print successors
