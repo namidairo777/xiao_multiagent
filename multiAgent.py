@@ -390,7 +390,7 @@ def experiment():
     level = [1,2,3]
     algorithms = ["speedupcra", "abstraction"]
     # 1. Computational time cost
-    
+    """
     start = time.time()
     print "Experiment1 - Computational time cost"
     for algorithm in algorithms:
@@ -425,25 +425,27 @@ def experiment():
 
     print "Experiment1 cost time: %f" % (time.time()-start)
     
-
+    """
     start = time.time()
     # 2. Search time cost
     print "Experiment1 - Search time cost"
-    for algorithm in algorithms:
+    for algorithm in ["abstraction"]:
         print algorithm
-        for m in maps:
-            print "---"+m
-            # mapName algorithm numAgents numGames
-            mapName = "expMaps/" + m
-            params = [mapName, algorithm, 3, 100]
-            rules = ClassicGameRules()
-            games = []
-            args = readCommand(params, None, 2)
-            for i in range(args["numGames"]):
-                getRandomPositions(args, mapName)        
-                game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
-                prefix = "test2_" + m + "_" + algorithm
-                game.run(prefix=prefix)
+        for lvl in [1, 3]:
+            for m in maps:
+                print "---"+m
+                # mapName algorithm numAgents numGames
+                mapName = "expMaps/" + m
+                params = [mapName, algorithm, 3, 100]
+                rules = ClassicGameRules()
+                games = []
+                args = readCommand(params, None, lvl)
+                for i in range(args["numGames"]):
+                    getRandomPositions(args, mapName)        
+                    game = rules.newGame(args["layout"], args["target"], args["pursuers"], args["display"])
+                    prefix = "test2_" + m + "_" + algorithm + "_level" + str(lvl)
+                    game.run(prefix=prefix)
+
     print "Experiment2 cost time: %f" % (time.time()-start)
 
 if __name__ == '__main__':
