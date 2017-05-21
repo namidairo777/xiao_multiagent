@@ -43,8 +43,50 @@ def test():
 	with open(title, "rb") as f:
 		reader = csv.reader(f)
 		data = list(reader)
-		print data[1:4]
+		# print data[1:4]
 		result = sum([float(i[0]) for i in data]) / len(data)
 	print result
 
-do2()
+def readData2(title):
+	log = 0.0
+	successRate = 0.0
+	dataList = []
+	with open(title, "rb") as f:		
+		reader = csv.reader(f)
+		data = list(reader)
+		for i in data:
+			if i[0] != "NAN":
+				dataList.append(float(i[0]))
+		#print len(dataList), "/", len(data)
+		successRate = float(len(dataList)) / float(len(data))
+		print successRate
+	return successRate, dataList
+
+def test2():
+	"""
+	calculate success rate and distribution
+	"""
+	rates = [["map", "speedpucra", "abstraction(1)", "abstraction(2)", "abstraction(3)"]]
+	rate = None
+	for i in range(10):
+		rate = ["mts" + str(i)]
+		datas = []
+		title = "test2_mts" + str(i) + "_speedupcra.csv"
+		result, data = readData2(title)
+		rate.append(result)
+		data.insert(0, "speedupcra")
+		datas.append(data)
+
+		for lvl in [1, 2, 3]:
+			title = "test2_mts" + str(i) + "_abstraction_level" + str(lvl) + ".csv"
+			result, data = readData2(title)
+			rate.append(result)
+			data.insert(0, "abstraction_level" + str(lvl))
+			datas.append(data)
+		#writeLog("test2_mts" + str(i) + ".csv", datas)
+		rates.append(rate)
+		print rates
+	# writeLog
+	writeLog("test2_rate.csv", rates)
+#do2()
+test2()
