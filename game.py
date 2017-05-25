@@ -424,6 +424,7 @@ class Game:
         
         # Rules are different from pacman project
         # turnCount = 0
+        time.sleep(5)
         while not self.gameOver:
             # make the plan for moving
             observation = self.state.deepCopy()
@@ -475,8 +476,8 @@ class Game:
             #positions = []
             self.turn += 1
             
-            #while (time.time() - turnStartTime) <= 0.5:
-             #   pass
+            #while (time.time() - turnStartTime) <= 0.025:
+            #    pass
             """
             Real-time constraints 
             """

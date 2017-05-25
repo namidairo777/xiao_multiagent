@@ -448,12 +448,14 @@ def experiment():
 
     print "Experiment2 cost time: %f" % (time.time()-start)
 
+
 if __name__ == '__main__':
 
     #args = readCommand(sys.argv[1:])
     #run(**args)
 
-    experiment()
+    # experiment()
+    runGames()
 
     pass
 
