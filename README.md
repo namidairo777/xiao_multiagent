@@ -1,18 +1,21 @@
 # Multi-Agent project
-
 Multi-Agent pursuit a moving target by speed up cover-set and tie-breaking
 
 ## Introduction
 This is a research that I am doing as a Master student in University of Tsukuba
 In this research, I proposed a method for multi-agent pursuering a single moving target.
 Especially this method could be used in real-time video game, such like Pacman or Starwars, Warcraft 
+
 ## Real-time
 According to pacman rules and player frame rate smooth analysis,
 0.1 s moves 1 tile, equally maximum planning time 0.1s one turn
+
 ## Grid environment
 Currently, up, down, left and right, only four directions movement. 
+
 ## Related research
 A Cover-Based Approach to Multi-Agent Moving Target Pursuit
+
 ## CLI program
 	python multiagent.py [map] [algorithm] [agent number] [game number]
 Example: 
@@ -20,6 +23,7 @@ Example:
 python multiagent.py basicMap speedupcra 3 10
 ```
 Algorithm: astar, cra (cover-hueristic), speedupcra (speedup cover), abstraction(speedup cra using abstraction)
+
 ## Map Abstraction
 1. Obstacles 2-dimension array to unconnected graph
 2. Unconnected graph to connected graph
@@ -30,13 +34,18 @@ Algorithm: astar, cra (cover-hueristic), speedupcra (speedup cover), abstraction
 - Python 2.7
 - Ubuntu 16.04
 - Inter Core i7-4790
+
 ## Demo
 - Round Map (A star algoritm)
-![Astar](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/astar.gif)
+![Astar](https://github.com/namidairo777/xiao_multiagent/blob/master/astar.gif)
 - Round Map (Proposed method)
-![Proposed](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/speedupcra.gif)
+![Proposed](https://github.com/namidairo777/xiao_multiagent/blob/master/speedupcra.gif)
 - Round Map (Proposed method)
-![BigMap](https://github.com/namidairo777/xiao_multiagent/blob/master/documents/bigMap.gif)
+![BigMap](https://github.com/namidairo777/xiao_multiagent/blob/master/bigMap.gif)
+
+# Publication
+[79th IPSJ](https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id=181086&item_no=1&page_id=13&block_id=8)
+
 # Work to do
 1. Abstraction
 2. Refinement
